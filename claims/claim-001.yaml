@@ -1,0 +1,63 @@
+---
+title: "Claim 001 — Model Performance Threshold Claim"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-05"
+updated: "2026-02-05"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the claim artifact structure and wording under direct human design, review, and final approval."
+
+dependencies: []
+
+anchors:
+  - "CLAIM-001-v0.1.0"
+---
+
+claim_id: "claim-001"
+
+statement: >
+  Model version v1.0 achieves an accuracy of at least 0.82 on dataset D
+  when evaluated under the declared evaluation configuration.
+
+metric:
+  name: "accuracy"
+  threshold: 0.82
+  comparator: ">="
+
+subject:
+  model_id: "model-v1.0"
+  dataset_id: "dataset-D"
+
+evaluation_context:
+  task: "supervised classification"
+  split: "held-out test set"
+  evaluation_protocol: "single-run evaluation using fixed random seed"
+
+current_state: "proposed"
+
+state_history_pointer: "../transitions/transition-log.json"
+
+notes:
+  - This claim represents the smallest testable scientific statement used in the demo.
+  - All future evidence submissions must reference this claim_id.
+  - State transitions are performed only through validated evidence and rule checks.
