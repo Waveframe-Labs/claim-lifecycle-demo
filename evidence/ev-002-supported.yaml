@@ -1,0 +1,76 @@
+---
+title: "Evidence 002 — Supporting evidence for Claim 001 (performance validation)"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-05"
+updated: "2026-02-05"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the evidence artifact structure and wording under direct human design, review, and final approval."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+  - "./ev-001-proposed.yaml"
+
+anchors:
+  - "EVIDENCE-002-v0.1.0"
+---
+
+evidence_id: "ev-002-supported"
+
+claim_id: "claim-001"
+
+intended_transition:
+  from: "proposed"
+  to: "supported"
+
+evidence_type: "performance_validation"
+
+summary: >
+  This evidence validates Claim 001 by reporting a model evaluation run in which
+  the observed accuracy meets or exceeds the declared performance threshold.
+
+observed_metrics:
+  metric: "accuracy"
+  value: 0.84
+  threshold: 0.82
+  comparator: ">="
+
+submitted_artifacts:
+  - artifact_id: "run-001"
+    path: "../artifacts/run-001/"
+    description: "Evaluation run artifacts including metrics, configuration, and environment information for the validated model run."
+
+evaluation_context:
+  model_id: "model-v1.0"
+  dataset_id: "dataset-D"
+  evaluation_protocol: "single-run evaluation using fixed random seed"
+  split: "held-out test set"
+
+provenance:
+  submitter: "human"
+  submission_method: "manual_demo_submission"
+
+notes:
+  - The reported accuracy satisfies the threshold declared in Claim 001.
+  - This evidence requests promotion of the claim state from proposed to supported.
+  - Subsequent evidence may contradict or supersede this validation.
