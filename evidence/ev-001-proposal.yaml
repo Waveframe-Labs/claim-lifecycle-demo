@@ -1,0 +1,64 @@
+---
+title: "Evidence 001 — Initial proposal evidence for Claim 001"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-05"
+updated: "2026-02-05"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the evidence artifact structure and wording under direct human design, review, and final approval."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+
+anchors:
+  - "EVIDENCE-001-v0.1.0"
+---
+
+evidence_id: "ev-001-proposed"
+
+claim_id: "claim-001"
+
+intended_transition:
+  from: null
+  to: "proposed"
+
+evidence_type: "initial_proposal"
+
+summary: >
+  This evidence submission proposes Claim 001 as a testable scientific statement
+  and establishes the initial lifecycle entry for the claim. No performance
+  validation is asserted at this stage.
+
+submitted_artifacts:
+  - artifact_id: "run-000"
+    path: "../artifacts/run-000/"
+    description: "Placeholder artifact set representing the initial experiment setup and configuration."
+
+provenance:
+  submitter: "human"
+  submission_method: "manual_demo_submission"
+
+notes:
+  - This evidence establishes the claim in the lifecycle.
+  - No metric validation is performed at this stage.
+  - Subsequent evidence submissions are required to support or contradict the claim.
