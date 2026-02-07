@@ -173,15 +173,15 @@ Final claim state: superseded
 
 This output demonstrates that:
 
-- evidense drives state transitions, 
+- evidence drives state transitions, 
 - transitions are rule-checked,  
-- and the claim reaches a final superseded state withuot any direct mutation of the claim file.  
+- and the claim reaches a final superseded state without any direct mutation of the claim file.  
 
 ---  
 
 ## Relationship to the Waveframe Labs ecosystem
 
-This repository demonstrates a thin, concrete slice of the Waaveframe Labs governance model:  
+This repository demonstrates a thin, concrete slice of the Waveframe Labs governance model:  
 
 - claim lifecycle semantics
 - evidence-driven state transitions
