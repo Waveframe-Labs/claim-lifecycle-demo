@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
+message: "If you use or reference this demo, please cite it as a reference implementation of a governed claim lifecycle."
+type: software
+
+authors:
+  - family-names: Wright
+    given-names: Shawn C.
+    email: swright@waveframelabs.org
+    orcid: https://orcid.org/0009-0006-6043-9295
+
+repository-code: https://github.com/Waveframe-Labs/claim-lifecycle-demo
+
+license: Apache-2.0
+
+keywords:
+  - claim lifecycle
+  - scientific provenance
+  - research governance
+  - evidence tracking
+  - reproducible research
