@@ -1,0 +1,64 @@
+---
+title: "Claim lifecycle transition rules"
+filetype: "specification"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-06"
+updated: "2026-02-06"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the transition rule specification under direct human authorship and review."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+
+anchors:
+  - "CLAIM-TRANSITION-RULES-v0.1.0"
+---
+
+allowed_transitions:
+  - from: null
+    to: proposed
+
+  - from: proposed
+    to: supported
+
+  - from: supported
+    to: contradicted
+
+  - from: contradicted
+    to: superseded
+
+validation_requirements:
+  - rule_id: "evidence-must-reference-claim"
+    description: "Evidence must reference a valid claim_id."
+
+  - rule_id: "transition-must-match-current-state"
+    description: "The evidence intended_transition.from must match the claim current_state."
+
+  - rule_id: "transition-must-be-allowed"
+    description: "The requested transition must be listed in allowed_transitions."
+
+  - rule_id: "artifacts-must-be-declared"
+    description: "Evidence must declare at least one submitted artifact."
+
+  - rule_id: "evidence-metadata-must-be-complete"
+    description: "Evidence metadata must be present and schema-compliant."
