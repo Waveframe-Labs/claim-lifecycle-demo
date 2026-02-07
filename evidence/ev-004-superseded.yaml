@@ -1,0 +1,81 @@
+---
+title: "Evidence 004 — Superseding evidence for Claim 001 (reformulated claim and improved evaluation)"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-06"
+updated: "2026-02-06"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the evidence artifact structure and wording under direct human design, review, and final approval."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+  - "./ev-003-contradicted.yaml"
+
+anchors:
+  - "EVIDENCE-004-v0.1.0"
+---
+
+evidence_id: "ev-004-superseded"
+
+claim_id: "claim-001"
+
+intended_transition:
+  from: "contradicted"
+  to: "superseded"
+
+evidence_type: "claim_reformulation_and_replacement"
+
+summary: >
+  This evidence supersedes Claim 001 by introducing a refined formulation of the
+  original claim and an improved evaluation protocol that resolves the previously
+  observed inconsistency between supporting and contradicting results.
+
+superseding_claim:
+  new_claim_id: "claim-002"
+  relationship: "replacement"
+  rationale: >
+    The original claim did not sufficiently constrain the evaluation protocol and
+    data preprocessing steps. A refined claim with stricter controls is required.
+
+submitted_artifacts:
+  - artifact_id: "run-003"
+    path: "../artifacts/run-003/"
+    description: "Improved evaluation run artifacts produced under the revised protocol and controlled preprocessing pipeline."
+
+evaluation_context:
+  model_id: "model-v1.1"
+  dataset_id: "dataset-D"
+  evaluation_protocol: "revised protocol with fixed preprocessing and controlled randomness"
+  split: "held-out test set"
+
+provenance:
+  submitter: "human"
+  submission_method: "manual_demo_submission"
+
+notes:
+  - This transition demonstrates that claims are not only contradicted but may be
+    formally replaced by improved formulations.
+  - Supersession preserves the full historical record of the original claim and
+    its supporting and contradicting evidence.
+  - Follow-on work should introduce the new claim object referenced by
+    superseding_claim.new_claim_id.
