@@ -33,7 +33,7 @@ anchors:
 
 import json
 import yaml
-from datetime import datetime
+from datetime import datetime, timezone  
 from pathlib import Path
 
 
@@ -109,7 +109,7 @@ def main():
             continue
 
         entry = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "claim_id": evidence["claim_id"],
             "evidence_id": evidence["evidence_id"],
             "from": from_state,

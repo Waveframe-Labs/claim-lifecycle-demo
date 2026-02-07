@@ -1,41 +1,27 @@
 ---
-title: "Claim lifecycle transition log"
-filetype: "log"
-type: "non-normative"
-domain: "case-study"
-version: "0.1.0"
-doi: "TBD-0.1.0"
-status: "Draft"
-created: "2026-02-06"
-updated: "2026-02-06"
-
-author:
-  name: "Shawn C. Wright"
-  email: "swright@waveframelabs.org"
-  orcid: "https://orcid.org/0009-0006-6043-9295"
-
-maintainer:
-  name: "Waveframe Labs"
-  url: "https://waveframelabs.org"
-
-license: "Apache-2.0"
-
-copyright:
-  holder: "Waveframe Labs"
-  year: "2026"
-
-ai_assisted: "partial"
-ai_assistance_details: "AI-assisted scaffolding of the transition log structure and demo lifecycle flow under direct human design and review."
-
-dependencies:
-  - "../claims/claim-001.yaml"
-  - "../evidence/ev-001-proposed.yaml"
-  - "../evidence/ev-002-supported.yaml"
-  - "../evidence/ev-003-contradicted.yaml"
-  - "../evidence/ev-004-superseded.yaml"
-
-anchors:
-  - "CLAIM-TRANSITION-LOG-v0.1.0"
----
 
 []
+---
+[
+  {
+    "timestamp": "2026-02-07T02:32:38.311961Z",
+    "claim_id": "claim-001",
+    "evidence_id": "ev-002-supported",
+    "from": "proposed",
+    "to": "supported"
+  },
+  {
+    "timestamp": "2026-02-07T02:32:38.313900Z",
+    "claim_id": "claim-001",
+    "evidence_id": "ev-003-contradicted",
+    "from": "supported",
+    "to": "contradicted"
+  },
+  {
+    "timestamp": "2026-02-07T02:32:38.315808Z",
+    "claim_id": "claim-001",
+    "evidence_id": "ev-004-superseded",
+    "from": "contradicted",
+    "to": "superseded"
+  }
+]
