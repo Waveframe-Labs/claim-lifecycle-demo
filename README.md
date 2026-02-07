@@ -46,7 +46,25 @@ Each state transition is driven by new evidence, validated for completeness, and
 
 This repository exists to demonstrate *behavior*, not infrastructure.
 
----
+---  
+
+## Running the demo
+
+From the repository root:
+
+```bash
+python demo_runner/run_demo.py
+```  
+
+The executed lifecycle transitions are appended to:
+
+```
+transitions/transition-log.json  
+```  
+
+This file provides the immutable history of the claim state changes. 
+
+---  
 
 ## What is being tracked?
 
