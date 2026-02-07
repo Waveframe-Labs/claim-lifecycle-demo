@@ -1,3 +1,4 @@
+"""  
 <!--
 title: "Claim lifecycle demo runner"
 filetype: "operational"
@@ -28,6 +29,7 @@ dependencies:
 anchors:
   - "CLAIM-DEMO-RUNNER-v0.1.0"
 -->
+"""  
 
 import json
 import yaml
