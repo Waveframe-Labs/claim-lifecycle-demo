@@ -127,8 +127,6 @@ claim-lifecycle-demo/
 │ ├─ ev-003-contradicted.yaml
 │ └─ ev-004-superseded.yaml
 │
-├─ artifacts/
-│
 ├─ transitions/
 │ └─ transition-log.json
 │
@@ -138,6 +136,9 @@ claim-lifecycle-demo/
 ├─ demo_runner/
 │ └─ run_demo.py
 │
+├─ CITATION.cff
+├─ LICENSE  
+├─ .gitignore
 └─ README.md  
 ```  
 
