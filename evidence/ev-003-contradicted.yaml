@@ -1,0 +1,77 @@
+---
+title: "Evidence 003 — Contradicting evidence for Claim 001 (failed replication)"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-06"
+updated: "2026-02-06"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the evidence artifact structure and wording under direct human design, review, and final approval."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+  - "./ev-002-supported.yaml"
+
+anchors:
+  - "EVIDENCE-003-v0.1.0"
+---
+
+evidence_id: "ev-003-contradicted"
+
+claim_id: "claim-001"
+
+intended_transition:
+  from: "supported"
+  to: "contradicted"
+
+evidence_type: "replication_failure"
+
+summary: >
+  This evidence reports a failed independent replication attempt in which the
+  observed model performance does not meet the threshold declared in Claim 001.
+
+observed_metrics:
+  metric: "accuracy"
+  value: 0.79
+  threshold: 0.82
+  comparator: ">="
+
+submitted_artifacts:
+  - artifact_id: "run-002"
+    path: "../artifacts/run-002/"
+    description: "Independent replication run artifacts including metrics, configuration, and environment information."
+
+evaluation_context:
+  model_id: "model-v1.0"
+  dataset_id: "dataset-D"
+  evaluation_protocol: "independent replication using different random seed"
+  split: "held-out test set"
+
+provenance:
+  submitter: "external_researcher"
+  submission_method: "manual_demo_submission"
+
+notes:
+  - The observed accuracy fails to satisfy the threshold declared in Claim 001.
+  - This evidence contradicts the previously reported supporting evidence.
+  - This transition demonstrates that claims may move backward in confidence
+    without deleting or rewriting earlier validation history.
