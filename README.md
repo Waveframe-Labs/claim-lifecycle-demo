@@ -7,7 +7,7 @@ version: "0.1.0"
 doi: "TBD-0.1.0"
 status: "Draft"
 created: "2026-02-05"
-updated: "2026-02-05"
+updated: "2026-02-06"
 
 author:
   name: "Shawn C. Wright"
@@ -25,7 +25,7 @@ copyright:
   year: "2026"
 
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted drafting of the demo structure and documentation under direct human design, review, and final approval."
+ai_assistance_details: "AI-assisted drafting and refinement of the demo documentation under direct human design, review, and final approval."
 
 dependencies: []
 
@@ -38,33 +38,16 @@ anchors:
 This repository is a minimal, end-to-end demonstration of a governed scientific **claim lifecycle**.
 
 It shows how a single claim moves through the following states:
-```
-proposed → supported → contradicted → superseded
-```
 
-Each state transition is driven by new evidence, validated for completeness, and recorded as an immutable event rather than a manual edit.
-
-This repository exists to demonstrate *behavior*, not infrastructure.
-
----  
-
-## Running the demo
-
-From the repository root:
-
-```bash
-python demo_runner/run_demo.py
+```  
+proposed→ supported → contradicted → superseded 
 ```  
 
-The executed lifecycle transitions are appended to:
+Each state transition is driven by new evidence, validated against explicit rules, and recorded as an immutable event rather than a manual edit.
 
-```
-transitions/transition-log.json  
-```  
+This repository exists to demonstrate **claim lifecycle behavior**, not infrastructure or platform tooling.
 
-This file provides the immutable history of the claim state changes. 
-
----  
+---
 
 ## What is being tracked?
 
@@ -74,7 +57,7 @@ A claim represents the smallest testable scientific statement that a result depe
 
 Example (used in this demo):
 
-> A specific model version achieves at least a specified performance threshold under a declared dataset and configuration.
+> A specific model version achieves at least a specified performance threshold under a declared dataset and evaluation configuration.
 
 All artifacts (runs, metrics, configuration, environment, and assumptions) attach to the claim as lineage.
 
@@ -85,10 +68,10 @@ All artifacts (runs, metrics, configuration, environment, and assumptions) attac
 A claim may only change state when a new **evidence submission**:
 
 - references the claim by ID
+- declares an intended state transition
 - includes linked artifacts
-- declares an intended transition
-- passes metadata completeness checks
 - satisfies transition rules
+- and passes metadata completeness requirements
 
 Only validated evidence can trigger a state change.
 
@@ -98,7 +81,8 @@ Only validated evidence can trigger a state change.
 
 Anyone may submit evidence for a claim.
 
-However, only evidence that passes validation and rule checks can update the claim’s state.
+However, claim state is not edited directly.  
+State transitions occur only when an evidence submission is accepted by the rule boundary and recorded in the transition log.
 
 ---
 
@@ -106,74 +90,102 @@ However, only evidence that passes validation and rule checks can update the cla
 
 This demo shows:
 
-- a single claim defined in `claims/`
-- multiple evidence submissions in `evidence/`
-- experiment-style artifacts in `artifacts/`
-- an append-only transition history in `transitions/`
-- explicit transition rules in `rules/`
-- a small demo runner that enforces validation and state transitions
+- a single governed claim object (`claims/`)
+- multiple evidence submissions (`evidence/`)
+- experiment-style artifacts (`artifacts/`)
+- an append-only transition history (`transitions/`)
+- explicit transition rules (`rules/`)
+- and a minimal runner that enforces the lifecycle (`demo_runner/`)
 
-Nothing is overwritten.
+No claim file is overwritten.
 
-Previous claim states remain visible and auditable.
+Previous states and prior evidence remain visible and auditable.
 
 ---
 
-## Relationship to the Waveframe Labs stack
+## Why this matters
 
-This repository demonstrates a thin, concrete slice of the Waveframe Labs ecosystem:
+Most research workflows track files, models, and results.
 
-- the claim lifecycle semantics
-- evidence-driven state transitions
-- validation and enforcement boundaries
+This demo treats **claims themselves** as first-class, governed objects whose status can change only through validated evidence and explicit transition rules.
 
-The goal is to make the lifecycle itself observable and understandable without requiring any prior familiarity with the broader governance stack.
+This makes scientific conclusions auditable, reversible, and replaceable without rewriting history.
 
 ---
 
 ## Repository structure
-```
+
+```  
 claim-lifecycle-demo/
 ├─ claims/
-│   └─ claim-001.yaml
+│ └─ claim-001.yaml
+│ └─ claim-002.yaml
 │
 ├─ evidence/
-│   ├─ ev-001-proposed.yaml
-│   ├─ ev-002-supported.yaml
-│   ├─ ev-003-contradicted.yaml
-│   └─ ev-004-superseded.yaml
+│ ├─ ev-001-proposed.yaml
+│ ├─ ev-002-supported.yaml
+│ ├─ ev-003-contradicted.yaml
+│ └─ ev-004-superseded.yaml
 │
 ├─ artifacts/
-│   ├─ run-001/
-│   ├─ run-002/
-│   └─ run-003/
 │
 ├─ transitions/
-│   └─ transition-log.json
+│ └─ transition-log.json
 │
 ├─ rules/
-│   └─ transition-rules.yaml
+│ └─ transition-rules.yaml
 │
 ├─ demo_runner/
-│   └─ run_demo.py
+│ └─ run_demo.py
 │
-└─ README.md
-```
+└─ README.md  
+```  
+
 
 ---
 
-## How to run the demo
+## Running the demo
 
-The demo is executed by running a small local runner which:
+From the repository root:
 
-1. loads the claim
-2. loads each evidence submission
-3. validates metadata completeness
-4. checks transition rules
-5. appends an immutable transition event
+```bash
+python demo_runner/run_demo.py
+```  
 
-The runner is intentionally simple so that the lifecycle and enforcement boundaries are easy to inspect.
+This executes the full claim lifecycle and appends transition events to:
 
-(Instructions will be added once the runner and files are populated.)
+``` 
+transitions/transition-log.json  
+```  
 
----
+## Example execution output  
+
+```  
+Initial claim state: proposed
+[SKIP] ev-001-proposed does not match current state
+[OK] proposed -> supported via ev-002-supported
+[OK] supported -> contradicted via ev-003-contradicted
+[OK] contradicted -> superseded via ev-004-superseded
+
+Final claim state: superseded
+```  
+
+This output demonstrates that:
+
+- evidense drives state transitions, 
+- transitions are rule-checked,  
+- and the claim reaches a final superseded state withuot any direct mutation of the claim file.  
+
+---  
+
+## Relationship to the Waveframe Labs ecosystem
+
+This repository demonstrates a thin, concrete slice of the Waaveframe Labs governance model:  
+
+- claim lifecycle semantics
+- evidence-driven state transitions
+- and an explicit validation and enforcement boundary
+  
+The goal is to make the lifecycle itself observable and understandable without requiring familiarity with the broader governance or tooling stack.
+
+---  
