@@ -1,0 +1,76 @@
+---
+title: "Claim 002 — Refined model performance claim under controlled evaluation protocol"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Draft"
+created: "2026-02-06"
+updated: "2026-02-06"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of the refined claim artifact structure and wording under direct human design, review, and final approval."
+
+dependencies:
+  - "./claim-001.yaml"
+
+anchors:
+  - "CLAIM-002-v0.1.0"
+---
+
+claim_id: "claim-002"
+
+supersedes:
+  claim_id: "claim-001"
+  relationship: "replacement"
+  rationale: >
+    Claim 001 did not sufficiently constrain preprocessing steps and evaluation
+    controls, leading to inconsistent results across runs. This claim refines the
+    evaluation protocol and model specification to ensure reproducible and
+    interpretable performance validation.
+
+statement: >
+  Model version v1.1 achieves an accuracy of at least 0.82 on dataset D when
+  evaluated using a fixed preprocessing pipeline and a controlled, deterministic
+  evaluation protocol.
+
+metric:
+  name: "accuracy"
+  threshold: 0.82
+  comparator: ">="
+
+subject:
+  model_id: "model-v1.1"
+  dataset_id: "dataset-D"
+
+evaluation_context:
+  task: "supervised classification"
+  split: "held-out test set"
+  preprocessing_pipeline: "fixed and versioned preprocessing steps"
+  evaluation_protocol: "deterministic evaluation with controlled randomness"
+
+current_state: "proposed"
+
+state_history_pointer: "../transitions/transition-log.json"
+
+notes:
+  - This claim is the direct successor to claim-001.
+  - It represents a refined formulation with stricter evaluation controls.
+  - New evidence submissions should reference this claim_id for all future
+    validation and lifecycle transitions.
