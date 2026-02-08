@@ -59,7 +59,7 @@ Example (used in this demo):
 
 > A specific model version achieves at least a specified performance threshold under a declared dataset and evaluation configuration.
 
-This demo focuses on the governance and transition mechanics rather than on executing real experiments.
+This demo focuses on the governance and transition mechanics rather than on executing or validating real experiments.
 
 ---
 
@@ -69,7 +69,7 @@ A claim may only change state when a new **evidence submission**:
 
 - references the claim by ID
 - declares an intended state transition
-- includes linked artifacts
+- may reference linked artifacts
 - satisfies transition rules
 - and passes metadata completeness requirements
 
@@ -92,7 +92,7 @@ This demo shows:
 
 - a single governed claim object (`claims/`)
 - multiple evidence submissions (`evidence/`)
-- experiment-style artifacts (`artifacts/`)
+- evidence records that model artifact linkage (evidence/)
 - an append-only transition history (`transitions/`)
 - explicit transition rules (`rules/`)
 - and a minimal runner that enforces the lifecycle (`demo_runner/`)
