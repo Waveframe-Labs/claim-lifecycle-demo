@@ -59,7 +59,7 @@ Example (used in this demo):
 
 > A specific model version achieves at least a specified performance threshold under a declared dataset and evaluation configuration.
 
-All artifacts (runs, metrics, configuration, environment, and assumptions) attach to the claim as lineage.
+This demo focuses on the governance and transition mechanics rather than on executing real experiments.
 
 ---
 
