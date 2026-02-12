@@ -1,0 +1,71 @@
+---
+title: "Claim Lifecycle Demo — Change Log"
+filetype: "documentation"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.1"
+doi: "TBD-0.1.1"
+status: "Active"
+created: "2026-02-12"
+updated: "2026-02-12"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of structured changelog entries under direct human review and release control."
+
+dependencies: []
+
+anchors:
+  - "CLAIM-LIFECYCLE-DEMO-CHANGELOG-v0.1.1"
+---
+
+# Changelog
+
+All notable changes to this demo are documented in this file.
+
+This project follows semantic versioning for demo behavior and governance boundaries.
+
+---
+
+## [0.1.1] — 2026-02-12
+
+### Added
+
+- Introduced an explicit governance enforcement boundary between evidence-driven transition proposals and claim state updates.
+- Integrated an internal enforcement engine to evaluate transition proposals prior to applying state changes.
+- Added structural support for enforcement decisions in the demo runner execution flow.
+
+### Changed
+
+- Updated the demo runner to submit transition proposals through a governance enforcement stage before applying transitions.
+- Updated the root README to document the governed transition boundary and execution requirements.
+- Updated the demo execution instructions to reflect the local enforcement engine dependency.
+
+### Archived
+
+- Preserved the original, pre-governance demo runner implementation under:
+```  
+archive/run_demo.py  
+```  
+
+to maintain historical behavior and release traceability.
+
+### Notes
+
+- `transitions/transition-log.json` is an execution artifact and is not treated as a versioned source file.
+- This release introduces no changes to claim semantics or transition rule definitions.
+
