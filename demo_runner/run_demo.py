@@ -27,7 +27,7 @@ dependencies:
   - "../rules/transition-rules.yaml"
   - "../transitions/transition-log.json"
 anchors:
-  - "CLAIM-DEMO-RUNNER-v0.1.0"
+  - "CLAIM-DEMO-RUNNER-v0.1.1"
 -->
 """  
 
