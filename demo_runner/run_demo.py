@@ -8,7 +8,7 @@ version: "0.1.0"
 doi: "TBD-0.1.0"
 status: "Draft"
 created: "2026-02-06"
-updated: "2026-02-06"
+updated: "2026-02-12"
 author:
   name: "Shawn C. Wright"
   email: "swright@waveframelabs.org"
@@ -21,7 +21,7 @@ copyright:
   holder: "Waveframe Labs"
   year: "2026"
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted scaffolding of the claim lifecycle demo runner logic under direct human design, review, and final approval."
+ai_assistance_details: "AI-assisted scaffolding of the claim lifecycle demo runner logic under direct human design, review, and final approval. Updated to insert a governed transition boundary using the internal CRI-CORE enforcement kernel."
 dependencies:
   - "../claims/claim-001.yaml"
   - "../rules/transition-rules.yaml"
@@ -33,8 +33,13 @@ anchors:
 
 import json
 import yaml
-from datetime import datetime, timezone  
+from datetime import datetime, timezone
 from pathlib import Path
+
+# CRI-CORE internal enforcement stages
+from cricore.enforcement.independence import run_independence_stage
+from cricore.enforcement.integrity import run_integrity_stage
+from cricore.enforcement.publication import run_publication_stage
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -84,6 +89,57 @@ def transition_allowed(rules, from_state, to_state):
     return False
 
 
+def enforce_transition_with_cricore(*, orchestrator_id, reviewer_id):
+    """
+    Internal enforcement gate for a single transition proposal.
+
+    This uses CRI-CORE as an internal kernel and returns a list of
+    stage results.
+    """
+
+    run_context = {
+        "identities": {
+            "orchestrator": {"id": orchestrator_id, "type": "human"},
+            "reviewer": {"id": reviewer_id, "type": "human"},
+        },
+        "integrity": {
+            "workflow_execution_ref": "claim-demo-runner",
+            "run_payload_ref": "in-memory",
+            "attestation_ref": "none",
+        },
+        "publication": {
+            "repository_ref": "claim-demo-repo",
+            "commit_ref": "working-tree",
+        },
+    }
+
+    results = []
+
+    results.append(
+        run_independence_stage(
+            run_path=str(ROOT),
+            run_context=run_context,
+        )
+    )
+
+    results.append(
+        run_integrity_stage(
+            run_path=str(ROOT),
+            run_context=run_context,
+            finalize=False,
+        )
+    )
+
+    results.append(
+        run_publication_stage(
+            run_path=str(ROOT),
+            run_context=run_context,
+        )
+    )
+
+    return results
+
+
 def main():
     claim = load_yaml_with_front_matter(CLAIM_PATH)
     rules = load_yaml_with_front_matter(RULES_PATH)
@@ -107,6 +163,31 @@ def main():
         if not transition_allowed(rules, from_state, to_state):
             print(f"[REJECT] Transition {from_state} -> {to_state} not allowed")
             continue
+
+        # -------------------------
+        # CRI-CORE governed boundary
+        # -------------------------
+
+        stage_results = enforce_transition_with_cricore(
+            orchestrator_id="demo-orchestrator",
+            reviewer_id="demo-reviewer",
+        )
+
+        if not all(r.passed for r in stage_results):
+            print(
+                f"[BLOCKED] {from_state} -> {to_state} "
+                f"blocked by governance kernel"
+            )
+
+            for r in stage_results:
+                if not r.passed:
+                    print(f"  - stage={r.stage_id} failures={r.failure_classes}")
+
+            continue
+
+        # -------------------------
+        # Transition is now allowed
+        # -------------------------
 
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
