@@ -31,7 +31,7 @@ dependencies:
   - "../evidence/ev-003-contradicted.yaml"
   - "../evidence/ev-004-superseded.yaml"
 anchors:
-  - "CLAIM-DEMO-RUNNER-v0.2.2"
+  - "CLAIM-DEMO-RUNNER-v0.2.0"
 ---
 """
 
@@ -63,7 +63,7 @@ EVIDENCE_PATHS = [
 
 # --- CRI-CORE integration helpers ------------------------------------------------
 
-CRI_CORE_CONTRACT_VERSION = "0.2.0"
+CRI_CORE_CONTRACT_VERSION = "0.1.0"
 
 RUNS_ROOT = ROOT / "demo_runner" / "runs"
 
