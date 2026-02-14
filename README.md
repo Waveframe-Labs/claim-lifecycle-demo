@@ -3,11 +3,11 @@ title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
 filetype: "documentation"
 type: "guidance"
 domain: "case-study"
-version: "0.1.1"
-doi: "TBD-0.1.1"
+version: "0.2.0"
+doi: "TBD-0.2.0"
 status: "Draft"
 created: "2026-02-05"
-updated: "2026-02-12"
+updated: "2026-02-13"
 
 author:
   name: "Shawn C. Wright"
@@ -30,175 +30,183 @@ ai_assistance_details: "AI-assisted drafting and refinement of the demo document
 dependencies: []
 
 anchors:
-  - "CLAIM-LIFECYCLE-DEMO-README-v0.1.1"
+  - "CLAIM-LIFECYCLE-DEMO-README-v0.2.0"
 ---
 
 # Claim Lifecycle Demo
 
-This repository is a minimal, end-to-end demonstration of a **governed scientific claim lifecycle**.
+This repository is a minimal, end-to-end demonstration of a **governed
+scientific claim lifecycle** backed by a real enforcement engine.
 
 It shows how a single claim moves through the following states:
 
-```
-proposed → supported → contradicted → superseded
-```
+    proposed → supported → contradicted → superseded
 
-Each state transition is driven by submitted evidence, evaluated against explicit rules, passed through a governance enforcement boundary, and recorded as an immutable event.
+Each state transition is:
 
-This repository demonstrates **claim lifecycle behavior**.  
+-   triggered by submitted evidence\
+-   validated against explicit transition rules\
+-   passed through a CRI-CORE enforcement decision boundary\
+-   and recorded as an immutable event
+
+This repository demonstrates lifecycle governance.\
 It is not a platform or infrastructure showcase.
 
----
+------------------------------------------------------------------------
 
 ## What is being tracked?
 
 The primary object in this demo is a **claim**.
 
-A claim represents the smallest testable scientific statement that downstream results depend on.
+A claim represents the smallest testable scientific statement that
+downstream results depend on.
 
 Example (used in this demo):
 
-> A specific model version achieves at least a specified performance threshold under a declared dataset and evaluation configuration.
+> A specific model version achieves at least a specified performance
+> threshold under a declared dataset and evaluation configuration.
 
-This demo focuses on the governance and transition mechanics rather than on executing or validating real experiments.
+This demo focuses on governance mechanics rather than executing real
+experiments.
 
----
+------------------------------------------------------------------------
 
-## What is a valid update?
+## What makes a transition valid?
 
 A claim may only change state when a new **evidence submission**:
 
-- references the claim by ID
-- declares an intended state transition
-- may reference linked artifacts
-- satisfies the declared transition rules
-- and passes a governance enforcement boundary
+-   references the claim by ID\
+-   declares an intended state transition\
+-   satisfies declared transition rules\
+-   is materialized as a CRI-CORE run artifact\
+-   and passes enforcement validation
 
 Claim state is never edited directly.
 
----
+------------------------------------------------------------------------
 
-## How transitions are governed
+## How governance is enforced
 
-The transition flow implemented in this demo is:
+The transition flow implemented in this demo:
 
-```
-evidence submission
-      ↓
-transition proposal
-      ↓
-governance enforcement decision
-      ↓
-state transition (if allowed)
-```
+    evidence submission
+          ↓
+    transition proposal
+          ↓
+    CRI-CORE run materialization
+          ↓
+    enforcement pipeline decision
+          ↓
+    state transition (if allowed)
 
-The demo runner produces a transition proposal and submits it to an internal enforcement engine.  
-Only an explicit allow decision permits the state transition to be applied.
+Each transition attempt produces a structured run directory containing:
 
-This makes the transition boundary explicit and auditable.
+-   contract.json\
+-   report.md\
+-   approval.json\
+-   randomness.json\
+-   SHA256SUMS.txt\
+-   validation artifacts
 
----
+If enforcement fails, the transition is denied and state remains
+unchanged.
 
-## Who can submit updates?
+------------------------------------------------------------------------
 
-Anyone may submit evidence for a claim.
+## Demonstrated enforcement behaviors
 
-However, claim state is not edited directly.  
-State transitions occur only when an evidence submission passes:
+This demo currently demonstrates:
 
-- rule validation
-- and governance enforcement
+-   Rule validation (transition graph constraints)\
+-   Run structure contract enforcement\
+-   Identity separation enforcement (self-approval denial)\
+-   Explicit allow/deny decisions\
+-   Append-only transition logging
 
-and is then recorded in the transition log.
+It does not yet enforce:
 
----
+-   Cryptographic hash verification\
+-   Artifact integrity binding\
+-   Publication anchoring\
+-   External attestation verification
 
-## What is demonstrated in this repository?
+Those are later-phase capabilities of the enforcement engine.
 
-This demo shows:
+------------------------------------------------------------------------
 
-- a single governed claim object (`claims/`)
-- multiple evidence submissions (`evidence/`)
-- evidence records that model artifact linkage
-- an append-only transition history (`transitions/`)
-- explicit transition rules (`rules/`)
-- and a minimal runner that enforces the lifecycle (`demo_runner/`)
+## Repository structure
 
-No claim file is overwritten.
+    claims/           # Claim objects
+    evidence/         # Evidence submissions
+    rules/            # Transition rules
+    transitions/      # Append-only transition log
+    demo_runner/      # Lifecycle + enforcement integration
 
-Previous states and prior evidence remain visible and auditable.
+Claim files are never overwritten.\
+History remains visible and auditable.
 
----
-
-## Why this matters
-
-Most research workflows track files, models, and results.
-
-This demo treats **claims themselves** as first-class, governed objects whose status can change only through validated evidence and an explicit enforcement decision.
-
-This makes scientific conclusions:
-
-- auditable,
-- reversible,
-- and replaceable,
-
-without rewriting history.
-
----
+------------------------------------------------------------------------
 
 ## Running the demo
 
 ### Prerequisite
 
-This demo uses a local enforcement engine located in a separate repository.
+Both repositories must exist locally:
 
-Both repositories should exist locally, for example:
+    C:\GitHub\CRI-CORE
+    C:\GitHub\claim-lifecycle-demo
 
-```
-C:\GitHub\CRI-CORE
-C:\GitHub\claim-lifecycle-demo
-```
+### Windows (PowerShell)
 
-### On Windows (PowerShell)
+From the root of this repository:
 
-From the root of this demo repository:
-
-```powershell
+``` powershell
 $env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
 python demo_runner\run_demo.py
 ```
 
----
+------------------------------------------------------------------------
 
 ## Example execution output
 
-```
-Initial claim state: proposed
-[SKIP] ev-001-proposed does not match current state
-[OK] proposed -> supported via ev-002-supported
-[OK] supported -> contradicted via ev-003-contradicted
-[OK] contradicted -> superseded via ev-004-superseded
+    Initial claim state: proposed
+    [OK] proposed -> supported via ev-002-supported
+    [DENY] supported -> contradicted via ev-003-contradicted (attempt 1)
+            independence: FAILED
+    [OK] supported -> contradicted via ev-003-contradicted (run ...)
+    [OK] contradicted -> superseded via ev-004-superseded
 
-Final claim state: superseded
-```
+    Final claim state: superseded
 
-This output demonstrates that:
+This demonstrates:
 
-- evidence drives state transitions,
-- transitions are rule-checked,
-- each transition is passed through an enforcement decision,
-- and the claim reaches a final superseded state without any direct mutation of the claim file.
+-   Governance boundary is real\
+-   Enforcement decisions are explicit\
+-   Invalid transitions are denied\
+-   State changes only occur after a successful enforcement pass
 
----
+------------------------------------------------------------------------
 
-## Relationship to the Waveframe Labs ecosystem
+## Why this matters
 
-This repository demonstrates a concrete, end-to-end slice of the Waveframe Labs governance approach:
+Most research workflows track files and artifacts.
 
-- governed claim lifecycle semantics
-- evidence-driven transition proposals
-- and an explicit enforcement boundary before state change
+This demo treats **claims themselves as governed objects** whose status
+changes only through validated evidence and explicit enforcement.
 
-The enforcement engine used by this demo is an internal component and is not itself the subject of this repository.
+That enables:
 
-The goal of this demo is to make the **claim lifecycle and its governance boundary** observable and understandable without requiring familiarity with the broader tooling or governance stack.
+-   Deterministic lifecycle control\
+-   Reversible conclusions without rewriting history\
+-   Explicit accountability boundaries
+
+------------------------------------------------------------------------
+
+## Scope
+
+This repository exists to demonstrate the lifecycle boundary clearly and
+concretely.
+
+The enforcement engine (CRI-CORE) is a separate component.\
+The purpose here is to show what it looks like when a claim lifecycle is
+actually governed.
