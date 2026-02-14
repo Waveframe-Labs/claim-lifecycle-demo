@@ -84,7 +84,7 @@ def _purge_cricore_modules() -> None:
         del sys.modules[name]
 
 
-def _ensure_cricore_importable() -> Path:
+def _ensure_cricore_importable() -> None:
     """
     Ensures CRI-CORE is importable from the local environment.
 
@@ -100,7 +100,6 @@ def _ensure_cricore_importable() -> Path:
     else:
         candidate = (ROOT.parent / "CRI-CORE" / "src").resolve()
 
-    # Strong structural checks so we don't silently import the wrong thing.
     pkg_root = candidate / "cricore"
     if not candidate.exists() or not candidate.is_dir() or not pkg_root.exists() or not pkg_root.is_dir():
         raise RuntimeError(
@@ -113,10 +112,7 @@ def _ensure_cricore_importable() -> Path:
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-    # Purge cached imports so next import uses the inserted sys.path[0]
     _purge_cricore_modules()
-
-    return candidate
 
 
 def _write_json(path: Path, obj: Dict[str, Any]) -> None:
@@ -156,10 +152,11 @@ def _materialize_minimal_cricore_run(
 
     created_utc = _utc_now_iso()
 
+    # IMPORTANT: CRI-CORE loader expects `version` (not `contract_version`)
     _write_json(
         run_dir / "contract.json",
         {
-            "contract_version": CRI_CORE_CONTRACT_VERSION,
+            "version": CRI_CORE_CONTRACT_VERSION,
             "run_id": run_id,
             "created_utc": created_utc,
         },
@@ -246,10 +243,9 @@ def _cricore_decide(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[bool, L
     Returns:
       (allowed: bool, messages: List[str])
     """
-    cricore_src = _ensure_cricore_importable()
+    _ensure_cricore_importable()
 
     from cricore.enforcement.execution import run_enforcement_pipeline  # type: ignore
-    import cricore  # type: ignore
 
     results = run_enforcement_pipeline(
         str(run_dir),
@@ -260,21 +256,6 @@ def _cricore_decide(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[bool, L
     allowed = all(r.passed for r in results)
 
     messages: List[str] = []
-    messages.append(f"cricore_import: {Path(getattr(cricore, '__file__', 'UNKNOWN'))}")
-    messages.append(f"cricore_src: {cricore_src}")
-
-    # If run-structure fails, print the exact contract.json contents we wrote.
-    contract_path = run_dir / "contract.json"
-    if contract_path.exists():
-        try:
-            messages.append(f"contract.json_path: {contract_path}")
-            messages.append("contract.json_contents:")
-            messages.append(contract_path.read_text(encoding="utf-8").strip())
-        except Exception as exc:
-            messages.append(f"contract.json_read_error: {exc!r}")
-    else:
-        messages.append("contract.json_missing_on_disk")
-
     for r in results:
         if not r.passed:
             messages.append(f"{r.stage_id}: FAILED")
@@ -385,16 +366,7 @@ def main() -> None:
             if not allowed:
                 print(f"[DENY] {from_state} -> {to_state} via {evidence['evidence_id']} (attempt {attempt_idx})")
                 for line in messages:
-                    # Always print the import/path diagnostics + failures
-                    if (
-                        line.startswith("cricore_import:")
-                        or line.startswith("cricore_src:")
-                        or line.startswith("contract.json_")
-                        or line.startswith("contract.json_path:")
-                        or line == "contract.json_contents:"
-                        or line.endswith("FAILED")
-                        or line.startswith("  - ")
-                    ):
+                    if line.endswith("FAILED") or line.startswith("  - "):
                         print(f"        {line}")
                 continue
 
