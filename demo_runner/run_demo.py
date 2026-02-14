@@ -89,7 +89,7 @@ def _ensure_cricore_importable() -> None:
     Ensures CRI-CORE is importable from the local environment.
 
     Default assumption:
-      C:\\GitHub\\CRI-CORE\\src (relative to this repo's parent folder)
+      C:\GitHub\CRI-CORE\src (relative to this repo's parent folder)
 
     Override via environment variable:
       CRICORE_SRC=/path/to/CRI-CORE/src
@@ -152,11 +152,11 @@ def _materialize_minimal_cricore_run(
 
     created_utc = _utc_now_iso()
 
-    # IMPORTANT: CRI-CORE loader expects `version` (not `contract_version`)
+    # FIX APPLIED: Changed "version" to "contract_version" to match kernel expectations
     _write_json(
         run_dir / "contract.json",
         {
-            "version": CRI_CORE_CONTRACT_VERSION,
+            "contract_version": CRI_CORE_CONTRACT_VERSION,
             "run_id": run_id,
             "created_utc": created_utc,
         },
