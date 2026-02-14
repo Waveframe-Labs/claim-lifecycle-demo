@@ -39,7 +39,43 @@ All notable changes to this demo are documented in this file.
 
 This project follows semantic versioning for demo behavior and governance boundaries.
 
+---  
+
 ---
+
+## [0.2.0] — 2026-02-14
+
+### Added
+
+- Integrated CRI-CORE enforcement pipeline into the demo runner.
+- Materialized real CRI-CORE run artifact structure for each transition attempt:
+  - `contract.json`
+  - `report.md`
+  - `randomness.json`
+  - `approval.json`
+  - `SHA256SUMS.txt`
+  - `validation/invariant_results.json`
+- Implemented structural version gating against the CRI-CORE run contract.
+- Added enforcement-denial demonstration (self-approval violation scenario).
+
+### Changed
+
+- Transition proposals are now passed through an enforcement decision before claim state updates.
+- Claim state transitions now occur only after explicit allow decisions.
+- Updated README to reflect governed transition boundary and local enforcement dependency.
+
+### Archived
+
+- Preserved original pre-enforcement demo runner in:
+  `archive/run_demo.py`
+
+### Notes
+
+- `demo_runner/runs/` directories are execution artifacts and are not part of the versioned demo source.
+- `transitions/transition-log.json` is an append-only execution artifact.
+- This release does not modify claim semantics or transition rule definitions.
+
+---  
 
 ## [0.1.1] — 2026-02-12
 
