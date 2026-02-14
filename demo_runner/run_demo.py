@@ -63,22 +63,33 @@ EVIDENCE_PATHS = [
 
 # --- CRI-CORE integration helpers ------------------------------------------------
 
+# IMPORTANT:
+# This is the CRI-CORE run contract version (structure gate), not the demo repo version.
 CRI_CORE_CONTRACT_VERSION = "0.1.0"
 
 RUNS_ROOT = ROOT / "demo_runner" / "runs"
 
 
 def _utc_now_iso() -> str:
-    """Returns current UTC time in ISO 8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
 
-def _ensure_cricore_importable() -> None:
+def _purge_cricore_modules() -> None:
+    """
+    Prevents Python from reusing a previously imported cricore module from a
+    different path (site-packages, an old editable install, etc.).
+    """
+    to_delete = [name for name in sys.modules.keys() if name == "cricore" or name.startswith("cricore.")]
+    for name in to_delete:
+        del sys.modules[name]
+
+
+def _ensure_cricore_importable() -> Path:
     """
     Ensures CRI-CORE is importable from the local environment.
 
     Default assumption:
-      <demo_root_parent> / CRI-CORE / src
+      C:\\GitHub\\CRI-CORE\\src (relative to this repo's parent folder)
 
     Override via environment variable:
       CRICORE_SRC=/path/to/CRI-CORE/src
@@ -89,15 +100,23 @@ def _ensure_cricore_importable() -> None:
     else:
         candidate = (ROOT.parent / "CRI-CORE" / "src").resolve()
 
-    if not candidate.exists() or not candidate.is_dir():
+    # Strong structural checks so we don't silently import the wrong thing.
+    pkg_root = candidate / "cricore"
+    if not candidate.exists() or not candidate.is_dir() or not pkg_root.exists() or not pkg_root.is_dir():
         raise RuntimeError(
-            "CRI-CORE src path not found.\n"
-            f"Looked for: {candidate}\n"
+            "CRI-CORE src path not found or missing package folder.\n"
+            f"Looked for src: {candidate}\n"
+            f"Expected package: {pkg_root}\n"
             "Set CRICORE_SRC to the CRI-CORE /src folder if needed."
         )
 
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
+
+    # Purge cached imports so next import uses the inserted sys.path[0]
+    _purge_cricore_modules()
+
+    return candidate
 
 
 def _write_json(path: Path, obj: Dict[str, Any]) -> None:
@@ -109,7 +128,6 @@ def _write_text(path: Path, text: str) -> None:
 
 
 def _new_run_id(prefix: str = "DEMO-RUN") -> str:
-    """Generates a unique run ID based on timestamp."""
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     micros = datetime.now(timezone.utc).strftime("%f")
     return f"{prefix}-{stamp}-{micros}"
@@ -126,21 +144,18 @@ def _materialize_minimal_cricore_run(
 ) -> Tuple[Path, Dict[str, Any]]:
     """
     Creates a structurally valid CRI-CORE run directory.
-    
-    Adheres to CRI-CORE paths.py requirements (REQUIRED_FILES + REQUIRED_DIRECTORIES).
-    
-    Note:
-    - SHA256SUMS.txt is a placeholder; cryptographic verification is not enforced 
-      in this demo stage.
-    - approval.json is generated, though semantic ordering (approval after validation)
-      is not enforced here.
+
+    Adheres to CRI-CORE run/paths.py requirements (REQUIRED_FILES + REQUIRED_DIRECTORIES).
+
+    Notes:
+      - SHA256SUMS.txt is a placeholder manifest in this demo.
+      - Semantic ordering (e.g., approval after validation) is not enforced here.
     """
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "validation").mkdir(parents=True, exist_ok=True)
 
     created_utc = _utc_now_iso()
 
-    # contract.json (Required)
     _write_json(
         run_dir / "contract.json",
         {
@@ -150,12 +165,12 @@ def _materialize_minimal_cricore_run(
         },
     )
 
-    # report.md (Required)
     report_lines = [
         "# Demo Run Report",
         "",
         f"- run_id: `{run_id}`",
         f"- created_utc: `{created_utc}`",
+        f"- contract_version: `{CRI_CORE_CONTRACT_VERSION}`",
         "",
         "## Proposal",
         "```json",
@@ -169,7 +184,6 @@ def _materialize_minimal_cricore_run(
     ]
     _write_text(run_dir / "report.md", "\n".join(report_lines))
 
-    # randomness.json (Required)
     _write_json(
         run_dir / "randomness.json",
         {
@@ -179,7 +193,6 @@ def _materialize_minimal_cricore_run(
         },
     )
 
-    # approval.json (Required)
     _write_json(
         run_dir / "approval.json",
         {
@@ -190,14 +203,12 @@ def _materialize_minimal_cricore_run(
         },
     )
 
-    # SHA256SUMS.txt (Required)
-    # Placeholder manifest.
     _write_text(
         run_dir / "SHA256SUMS.txt",
-        "# Placeholder manifest (demo)\n# SHA verification is not enforced in CRI-CORE integrity stage yet.\n",
+        "# Placeholder manifest (demo)\n"
+        "# SHA verification is not enforced in CRI-CORE integrity stage yet.\n",
     )
 
-    # validation outputs (Directory required)
     _write_json(
         run_dir / "validation" / "invariant_results.json",
         {
@@ -207,7 +218,6 @@ def _materialize_minimal_cricore_run(
         },
     )
 
-    # run_context (Passed to CRI-CORE stages)
     run_context = {
         "identities": {
             "orchestrator": {"id": orchestrator_id, "type": "human"},
@@ -232,14 +242,14 @@ def _materialize_minimal_cricore_run(
 def _cricore_decide(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[bool, List[str]]:
     """
     Executes the CRI-CORE enforcement pipeline.
-    
+
     Returns:
       (allowed: bool, messages: List[str])
     """
-    _ensure_cricore_importable()
+    cricore_src = _ensure_cricore_importable()
 
-    # Import only after sys.path is set.
     from cricore.enforcement.execution import run_enforcement_pipeline  # type: ignore
+    import cricore  # type: ignore
 
     results = run_enforcement_pipeline(
         str(run_dir),
@@ -249,8 +259,22 @@ def _cricore_decide(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[bool, L
 
     allowed = all(r.passed for r in results)
 
-    # Flatten stage messages for reporting.
     messages: List[str] = []
+    messages.append(f"cricore_import: {Path(getattr(cricore, '__file__', 'UNKNOWN'))}")
+    messages.append(f"cricore_src: {cricore_src}")
+
+    # If run-structure fails, print the exact contract.json contents we wrote.
+    contract_path = run_dir / "contract.json"
+    if contract_path.exists():
+        try:
+            messages.append(f"contract.json_path: {contract_path}")
+            messages.append("contract.json_contents:")
+            messages.append(contract_path.read_text(encoding="utf-8").strip())
+        except Exception as exc:
+            messages.append(f"contract.json_read_error: {exc!r}")
+    else:
+        messages.append("contract.json_missing_on_disk")
+
     for r in results:
         if not r.passed:
             messages.append(f"{r.stage_id}: FAILED")
@@ -305,12 +329,10 @@ def main() -> None:
     log = load_transition_log()
 
     current_state = claim["current_state"]
-
     print(f"Initial claim state: {current_state}")
 
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
 
-    # Flag to ensure we only force a denial once (during 'supported' -> 'contradicted').
     injected_deny_used = False
 
     for ev_path in EVIDENCE_PATHS:
@@ -320,7 +342,6 @@ def main() -> None:
         from_state = intended["from"]
         to_state = intended["to"]
 
-        # Only attempt a governed transition if it matches the current state.
         if from_state != current_state:
             print(f"[SKIP] {evidence['evidence_id']} does not match current state")
             continue
@@ -329,7 +350,6 @@ def main() -> None:
             print(f"[REJECT] Transition {from_state} -> {to_state} not allowed by rules")
             continue
 
-        # Build proposal object
         proposal = {
             "type": "claim_transition",
             "claim_id": evidence["claim_id"],
@@ -338,24 +358,13 @@ def main() -> None:
             "to": to_state,
         }
 
-        # Configuration for attempts:
-        # Tuple format: (orchestrator_id, reviewer_id, self_approval_override)
         attempt_contexts: List[Tuple[str, str, bool]] = []
 
-        # Logic to demonstrate gating:
-        # Force a failure on the "supported" -> "contradicted" transition by using
-        # the same identity for orchestrator and reviewer without override.
-        if (
-            evidence.get("evidence_id") == "ev-003-contradicted"
-            and not injected_deny_used
-        ):
-            # Attempt 1: Fail (Self-approval violation)
-            attempt_contexts.append(("alice", "alice", False))
-            # Attempt 2: Pass (Valid reviewer)
-            attempt_contexts.append(("alice", "bob", False))
+        if evidence.get("evidence_id") == "ev-003-contradicted" and not injected_deny_used:
+            attempt_contexts.append(("alice", "alice", False))  # deny
+            attempt_contexts.append(("alice", "bob", False))    # allow
             injected_deny_used = True
         else:
-            # Default: Valid transition
             attempt_contexts.append(("alice", "bob", False))
 
         for attempt_idx, (orch, reviewer, override) in enumerate(attempt_contexts, start=1):
@@ -376,11 +385,19 @@ def main() -> None:
             if not allowed:
                 print(f"[DENY] {from_state} -> {to_state} via {evidence['evidence_id']} (attempt {attempt_idx})")
                 for line in messages:
-                    if line.endswith("FAILED") or line.startswith("  - "):
+                    # Always print the import/path diagnostics + failures
+                    if (
+                        line.startswith("cricore_import:")
+                        or line.startswith("cricore_src:")
+                        or line.startswith("contract.json_")
+                        or line.startswith("contract.json_path:")
+                        or line == "contract.json_contents:"
+                        or line.endswith("FAILED")
+                        or line.startswith("  - ")
+                    ):
                         print(f"        {line}")
                 continue
 
-            # Transition allowed
             entry = {
                 "timestamp": _utc_now_iso(),
                 "claim_id": evidence["claim_id"],
@@ -394,10 +411,9 @@ def main() -> None:
             current_state = to_state
 
             print(f"[OK] {from_state} -> {to_state} via {evidence['evidence_id']} (run {run_id})")
-            break 
+            break
 
     write_transition_log(log)
-
     print("\nFinal claim state:", current_state)
 
 
