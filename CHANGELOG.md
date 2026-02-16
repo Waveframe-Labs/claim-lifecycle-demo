@@ -7,7 +7,7 @@ version: "0.2.0"
 doi: "TBD-0.2.0"
 status: "Active"
 created: "2026-02-12"
-updated: "2026-02-12"
+updated: "2026-02-15"
 
 author:
   name: "Shawn C. Wright"
@@ -63,6 +63,7 @@ This project follows semantic versioning for demo behavior and governance bounda
 - Transition proposals are now passed through an enforcement decision before claim state updates.
 - Claim state transitions now occur only after explicit allow decisions.
 - Updated README to reflect governed transition boundary and local enforcement dependency.
+- Marked `transitions/transition-log.json1` as a runtime artifact and excluded it from version control.  
 
 ### Archived
 
@@ -74,6 +75,8 @@ This project follows semantic versioning for demo behavior and governance bounda
 - `demo_runner/runs/` directories are execution artifacts and are not part of the versioned demo source.
 - `transitions/transition-log.json` is an append-only execution artifact.
 - This release does not modify claim semantics or transition rule definitions.
+- Transition logs are generated during the demo execution.  
+- The log reflects runtime behavior and is not treated as a canonical source artifact.  
 
 ---  
 
