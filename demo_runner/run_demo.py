@@ -89,7 +89,7 @@ def _ensure_cricore_importable() -> None:
     Ensures CRI-CORE is importable from the local environment.
 
     Default assumption:
-      C:\GitHub\CRI-CORE\src (relative to this repo's parent folder)
+        C:\\GitHub\\CRI-CORE\\src (relative to this repo's parent folder)  
 
     Override via environment variable:
       CRICORE_SRC=/path/to/CRI-CORE/src
