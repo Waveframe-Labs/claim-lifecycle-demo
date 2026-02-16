@@ -7,7 +7,7 @@ version: "0.2.0"
 doi: "TBD-0.2.0"
 status: "Draft"
 created: "2026-02-05"
-updated: "2026-02-13"
+updated: "2026-02-15"
 
 author:
   name: "Shawn C. Wright"
@@ -52,7 +52,31 @@ Each state transition is:
 This repository demonstrates lifecycle governance.\
 It is not a platform or infrastructure showcase.
 
-------------------------------------------------------------------------
+---  
+
+## What This Demonstrates (In Practical Terms)
+
+This demo models a policy-gated workflow system.
+
+Specifically, it demonstrates:
+
+- Controlled state transitions (no direct mutation of claims)
+- Explicit role separation (orchestrator vs reviewer)
+- Enforcement before mutation (no state change without approval)
+- Auditable execution artifacts (each transition produces a structured run directory)
+- Append-only lifecycle history
+
+In practical environments, this pattern is relevant to:
+
+- Compliance-gated ML pipelines
+- Research governance workflows
+- Regulated data processing systems
+- Scientific reproducibility infrastructure
+
+This repository is intentionally minimal.
+It isolates the governance boundary without introducing platform complexity.
+
+---  
 
 ## What is being tracked?
 
@@ -69,7 +93,7 @@ Example (used in this demo):
 This demo focuses on governance mechanics rather than executing real
 experiments.
 
-------------------------------------------------------------------------
+---
 
 ## What makes a transition valid?
 
@@ -83,7 +107,7 @@ A claim may only change state when a new **evidence submission**:
 
 Claim state is never edited directly.
 
-------------------------------------------------------------------------
+---  
 
 ## How governance is enforced
 
@@ -111,7 +135,7 @@ Each transition attempt produces a structured run directory containing:
 If enforcement fails, the transition is denied and state remains
 unchanged.
 
-------------------------------------------------------------------------
+---
 
 ## Demonstrated enforcement behaviors
 
@@ -132,7 +156,7 @@ It does not yet enforce:
 
 Those are later-phase capabilities of the enforcement engine.
 
-------------------------------------------------------------------------
+---
 
 ## Repository structure
 
@@ -145,7 +169,7 @@ Those are later-phase capabilities of the enforcement engine.
 Claim files are never overwritten.\
 History remains visible and auditable.
 
-------------------------------------------------------------------------
+---
 
 ## Running the demo
 
@@ -165,7 +189,7 @@ $env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
 python demo_runner\run_demo.py
 ```
 
-------------------------------------------------------------------------
+---
 
 ## Example execution output
 
@@ -185,7 +209,13 @@ This demonstrates:
 -   Invalid transitions are denied\
 -   State changes only occur after a successful enforcement pass
 
-------------------------------------------------------------------------
+Example of a rejected transition:
+
+[DENY] supported -> contradicted via ev-003-contradicted
+        independence: FAILED
+          - self-approval detected and no override declared
+
+---
 
 ## Why this matters
 
@@ -200,7 +230,7 @@ That enables:
 -   Reversible conclusions without rewriting history\
 -   Explicit accountability boundaries
 
-------------------------------------------------------------------------
+---
 
 ## Scope
 
