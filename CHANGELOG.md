@@ -3,8 +3,8 @@ title: "Claim Lifecycle Demo — Change Log"
 filetype: "documentation"
 type: "non-normative"
 domain: "case-study"
-version: "0.1.1"
-doi: "TBD-0.1.1"
+version: "0.2.0"
+doi: "TBD-0.2.0"
 status: "Active"
 created: "2026-02-12"
 updated: "2026-02-12"
@@ -30,7 +30,7 @@ ai_assistance_details: "AI-assisted drafting of structured changelog entries und
 dependencies: []
 
 anchors:
-  - "CLAIM-LIFECYCLE-DEMO-CHANGELOG-v0.1.1"
+  - "CLAIM-LIFECYCLE-DEMO-CHANGELOG-v0.2.0"
 ---
 
 # Changelog
