@@ -1,0 +1,64 @@
+---
+title: "Demo Proposal — Claim-001 Lifecycle Transitions"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+doi: "TBD-0.1.0"
+status: "Active"
+created: "2026-02-17"
+updated: "2026-02-17"
+
+author:
+  name: "Shawn C. Wright"
+  email: "swright@waveframelabs.org"
+  orcid: "https://orcid.org/0009-0006-6043-9295"
+
+maintainer:
+  name: "Waveframe Labs"
+  url: "https://waveframelabs.org"
+
+license: "Apache-2.0"
+
+copyright:
+  holder: "Waveframe Labs"
+  year: "2026"
+
+ai_assisted: "partial"
+ai_assistance_details: "AI-assisted drafting of a minimal proposal artifact format to serve as the atomic binding surface for the demo runner."
+
+dependencies:
+  - "../claims/claim-001.yaml"
+  - "../rules/transition-rules.yaml"
+  - "../evidence/ev-001-proposed.yaml"
+  - "../evidence/ev-002-supported.yaml"
+  - "../evidence/ev-003-contradicted.yaml"
+  - "../evidence/ev-004-superseded.yaml"
+
+anchors:
+  - "CLAIM-DEMO-PROPOSAL-001-v0.1.0"
+---
+
+proposal_id: "proposal-001"
+type: "claim_transition_sequence"
+claim_id: "claim-001"
+contract_version: "0.1.0"
+
+# These are *declared* bindings; admissibility is resolved at execution time
+# by CRI-CORE using the run_context identities.
+authority_requirements:
+  - "reviewer_required:true"
+
+transitions:
+  - evidence_id: "ev-001-proposed"
+    from: "proposed"
+    to: "supported"
+  - evidence_id: "ev-002-supported"
+    from: "supported"
+    to: "contradicted"
+  - evidence_id: "ev-003-contradicted"
+    from: "contradicted"
+    to: "superseded"
+  - evidence_id: "ev-004-superseded"
+    from: "superseded"
+    to: "superseded"  # example no-op / terminal allowed by rules if present; adjust as needed
