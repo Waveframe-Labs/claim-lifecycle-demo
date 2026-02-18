@@ -3,11 +3,11 @@ title: "Claim 001 — Model Performance Threshold Claim"
 filetype: "operational"
 type: "non-normative"
 domain: "case-study"
-version: "0.1.0"
-doi: "TBD-0.1.0"
+version: "0.1.1"
+doi: "TBD-0.1.1"
 status: "Draft"
 created: "2026-02-05"
-updated: "2026-02-05"
+updated: "2026-02-17"
 
 author:
   name: "Shawn C. Wright"
@@ -30,7 +30,7 @@ ai_assistance_details: "AI-assisted drafting of the claim artifact structure and
 dependencies: []
 
 anchors:
-  - "CLAIM-001-v0.1.0"
+  - "CLAIM-001-v0.1.1"
 ---
 
 claim_id: "claim-001"
@@ -53,7 +53,7 @@ evaluation_context:
   split: "held-out test set"
   evaluation_protocol: "single-run evaluation using fixed random seed"
 
-current_state: "proposed"
+current_state: "null"
 
 state_history_pointer: "../transitions/transition-log.json"
 
