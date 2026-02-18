@@ -381,6 +381,7 @@ def main() -> None:
 
     current_state = claim["current_state"]
     print(f"Initial claim state: {current_state}")
+    print("Loaded claim object:", claim) 
 
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
 
