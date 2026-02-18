@@ -3,8 +3,8 @@ title: "Demo Proposal — Claim-001 Lifecycle Transitions"
 filetype: "operational"
 type: "non-normative"
 domain: "case-study"
-version: "0.1.0"
-doi: "TBD-0.1.0"
+version: "0.1.1"
+doi: "TBD-0.1.1"
 status: "Active"
 created: "2026-02-17"
 updated: "2026-02-17"
@@ -51,14 +51,17 @@ authority_requirements:
 
 transitions:
   - evidence_id: "ev-001-proposed"
+    from: null
+    to: "proposed"
+
+  - evidence_id: "ev-002-supported"
     from: "proposed"
     to: "supported"
-  - evidence_id: "ev-002-supported"
+
+  - evidence_id: "ev-003-contradicted"
     from: "supported"
     to: "contradicted"
-  - evidence_id: "ev-003-contradicted"
+
+  - evidence_id: "ev-004-superseded"
     from: "contradicted"
     to: "superseded"
-  - evidence_id: "ev-004-superseded"
-    from: "superseded"
-    to: "superseded"  # example no-op / terminal allowed by rules if present; adjust as needed
