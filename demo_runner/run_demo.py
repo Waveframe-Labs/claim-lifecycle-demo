@@ -4,11 +4,11 @@ title: "Claim lifecycle demo runner"
 filetype: "operational"
 type: "non-normative"
 domain: "case-study"
-version: "0.3.0"
-doi: "TBD-0.3.0"
+version: "0.3.1"
+doi: "TBD-0.3.1"
 status: "Active"
 created: "2026-02-06"
-updated: "2026-02-17"
+updated: "2026-02-18"
 
 author:
   name: "Shawn C. Wright"
@@ -39,7 +39,7 @@ dependencies:
   - "../evidence/ev-004-superseded.yaml"
 
 anchors:
-  - "CLAIM-DEMO-RUNNER-v0.3.0"
+  - "CLAIM-DEMO-RUNNER-v0.3.1"
 ---
 """
 
@@ -401,8 +401,15 @@ def main() -> None:
             from_state = t.get("from")
             to_state = t.get("to")
 
-            if not isinstance(evidence_id, str) or not isinstance(from_state, str) or not isinstance(to_state, str):
-                raise ValueError(f"Invalid transition entry in proposal: {t}")
+            if not isinstance(evidence_id, str):
+               raise ValueError(f"Invalid transition entry (bad evidence_id) in proposal: {t}")
+
+            if from_state is not None and not isinstance(from_state, str):
+                raise ValueError(f"Invalid transition entry (bad from state) in proposal: {t}")
+
+            if not isinstance(to_state, str):
+                raise ValueError(f"Invalid transition entry (bad to state) in proposal: {t}")
+
 
             evidence = _load_evidence_by_id(evidence_id)
 
