@@ -1,0 +1,96 @@
+---
+title: "Transition Log"
+filetype: "operational"
+type: "non-normative"
+domain: "case-study"
+version: "0.1.0"
+status: "Active"
+created: "2026-02-17"
+updated: "2026-02-17"
+license: "Apache-2.0"
+---
+[
+  {
+    "timestamp": "2026-02-18T05:09:23.425090+00:00",
+    "proposal_id": "proposal-001",
+    "proposal_hash": "cfe7f57ea16f933d4cf02005f860c385b5bff3ddf40e7f7ee364a0bec00e4ae5",
+    "claim_id": "claim-001",
+    "evidence_id": "ev-003-contradicted",
+    "from": "supported",
+    "to": "contradicted",
+    "contract_version": "0.1.0",
+    "cricore_run_id": "DEMO-RUN-20260218T050923Z-284870",
+    "authority_bindings": {
+      "orchestrator": "alice",
+      "reviewer": "alice",
+      "self_approval_override": false
+    },
+    "cricore_results": [
+      {
+        "stage_id": "run-structure",
+        "passed": true,
+        "failure_classes": [],
+        "messages": [],
+        "checked_at_utc": "2026-02-18T05:09:23.343520+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "structure-contract-version-gate",
+        "passed": true,
+        "failure_classes": [],
+        "messages": [],
+        "checked_at_utc": "2026-02-18T05:09:23.343520+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "independence",
+        "passed": false,
+        "failure_classes": [
+          "FailureClass.INDEPENDENCE_CHECK_FAILED"
+        ],
+        "messages": [
+          "self-approval detected and no override declared"
+        ],
+        "checked_at_utc": "2026-02-18T05:09:23.343615+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "integrity",
+        "passed": true,
+        "failure_classes": [],
+        "messages": [],
+        "checked_at_utc": "2026-02-18T05:09:23.346194+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "integrity-finalization",
+        "passed": true,
+        "failure_classes": [],
+        "messages": [],
+        "checked_at_utc": "2026-02-18T05:09:23.424130+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "publication",
+        "passed": true,
+        "failure_classes": [],
+        "messages": [],
+        "checked_at_utc": "2026-02-18T05:09:23.424181+00:00",
+        "engine_version": null
+      },
+      {
+        "stage_id": "publication-commit",
+        "passed": false,
+        "failure_classes": [
+          "FailureClass.INVARIANT_VIOLATION",
+          "FailureClass.PUBLICATION_CHECK_FAILED"
+        ],
+        "messages": [
+          "Commit blocked. Prior stages failed: independence"
+        ],
+        "checked_at_utc": "2026-02-18T05:09:23.424197+00:00",
+        "engine_version": null
+      }
+    ]
+  }
+]
