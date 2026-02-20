@@ -7,7 +7,7 @@ version: "0.3.2"
 doi: "TBD-0.3.2"
 status: "Active"
 created: "2026-02-05"
-updated: "2026-02-19"
+updated: "2026-02-20"
 
 author:
   name: "Shawn C. Wright"
