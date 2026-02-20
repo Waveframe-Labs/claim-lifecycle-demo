@@ -1,7 +1,9 @@
 cff-version: 1.2.0
 title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
-message: "If you use or reference this demo, please cite it as a reference implementation of a governed claim lifecycle."
+message: "If you use or reference this demo, please cite it as a governed claim lifecycle and kernel enforcement reference implementation."
 type: software
+version: 0.3.2
+date-released: 2026-02-19
 
 authors:
   - family-names: Wright
@@ -10,12 +12,25 @@ authors:
     orcid: https://orcid.org/0009-0006-6043-9295
 
 repository-code: https://github.com/Waveframe-Labs/claim-lifecycle-demo
+url: https://github.com/Waveframe-Labs/claim-lifecycle-demo
 
 license: Apache-2.0
 
+abstract: >
+  This repository provides a minimal, executable reference implementation
+  of a governed scientific claim lifecycle integrated with a deterministic
+  enforcement engine (CRI-CORE). It demonstrates evidence-driven state
+  transitions, structural run artifact contracts, role separation
+  enforcement, SHA256-based integrity verification, and centralized
+  commit gating via explicit enforcement decisions. The project isolates
+  lifecycle semantics from enforcement logic to illustrate how claim
+  mutation can be restricted to validated transition attempts under
+  reproducible governance constraints.
+
 keywords:
   - claim lifecycle
-  - scientific provenance
   - research governance
-  - evidence tracking
+  - deterministic enforcement
+  - scientific provenance
   - reproducible research
+  - compliance workflows
