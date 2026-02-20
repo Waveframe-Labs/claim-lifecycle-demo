@@ -43,7 +43,7 @@ This project follows semantic versioning for demo behavior and governance bounda
 
 ---
 
-## [0.3.2] — 2026-02-20
+## [0.3.2] — 2026-02-19
 
 ### Fixed
 
@@ -61,7 +61,7 @@ This project follows semantic versioning for demo behavior and governance bounda
 
 ---
 
-## [0.3.0] — 2026-02-20
+## [0.3.0] — 2026-02-19
 
 ### Added
 
