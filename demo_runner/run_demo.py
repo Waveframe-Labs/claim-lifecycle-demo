@@ -4,11 +4,11 @@ title: "Claim lifecycle demo runner"
 filetype: "operational"
 type: "non-normative"
 domain: "case-study"
-version: "0.3.1"
-doi: "TBD-0.3.1"
+version: "0.3.2"
+doi: "TBD-0.3.2"
 status: "Active"
 created: "2026-02-06"
-updated: "2026-02-18"
+updated: "2026-02-19"
 
 author:
   name: "Shawn C. Wright"
@@ -26,20 +26,21 @@ copyright:
   year: "2026"
 
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted integration of proposal artifacts and deterministic proposal hashing into the claim lifecycle demo runner while preserving lifecycle semantics as the demo's responsibility."
+ai_assistance_details: "AI-assisted correction of CRI-CORE pipeline return-shape handling to use commit_allowed as the authoritative decision signal, while preserving lifecycle semantics as the demo's responsibility."
 
 dependencies:
   - "../proposals/proposal-001.yaml"
   - "../claims/claim-001.yaml"
   - "../rules/transition-rules.yaml"
   - "../transitions/transition-log.json"
+  - "../transitions/rejections-log.json"
   - "../evidence/ev-001-proposed.yaml"
   - "../evidence/ev-002-supported.yaml"
   - "../evidence/ev-003-contradicted.yaml"
   - "../evidence/ev-004-superseded.yaml"
 
 anchors:
-  - "CLAIM-DEMO-RUNNER-v0.3.1"
+  - "CLAIM-DEMO-RUNNER-v0.3.2"
 ---
 """
 
@@ -276,18 +277,20 @@ def _cricore_decide(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[bool, L
 
     from cricore.enforcement.execution import run_enforcement_pipeline  # type: ignore
 
-    results = run_enforcement_pipeline(
+    stage_results, commit_allowed = run_enforcement_pipeline(
         str(run_dir),
         expected_contract_version=CRI_CORE_CONTRACT_VERSION,
         run_context=run_context,
     )
 
-    allowed = all(r.passed for r in results)
+    # IMPORTANT:
+    # commit_allowed is the kernel-owned decision signal.
+    allowed = bool(commit_allowed)
 
     messages: List[str] = []
     raw: List[Dict[str, Any]] = []
 
-    for r in results:
+    for r in stage_results:
         raw.append(
             {
                 "stage_id": r.stage_id,
@@ -381,7 +384,7 @@ def main() -> None:
 
     current_state = claim["current_state"]
     print(f"Initial claim state: {current_state}")
-    print("Loaded claim object:", claim) 
+    print("Loaded claim object:", claim)
 
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -402,14 +405,13 @@ def main() -> None:
             to_state = t.get("to")
 
             if not isinstance(evidence_id, str):
-               raise ValueError(f"Invalid transition entry (bad evidence_id) in proposal: {t}")
+                raise ValueError(f"Invalid transition entry (bad evidence_id) in proposal: {t}")
 
             if from_state is not None and not isinstance(from_state, str):
                 raise ValueError(f"Invalid transition entry (bad from state) in proposal: {t}")
 
             if not isinstance(to_state, str):
                 raise ValueError(f"Invalid transition entry (bad to state) in proposal: {t}")
-
 
             evidence = _load_evidence_by_id(evidence_id)
 
