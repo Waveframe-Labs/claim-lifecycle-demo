@@ -4,8 +4,8 @@ title: "Kernel enforcement showcase runner"
 filetype: "operational"
 type: "non-normative"
 domain: "case-study"
-version: "0.2.0"
-doi: "TBD-0.2.0"
+version: "0.3.0"
+doi: "TBD-0.3.0"
 status: "Active"
 created: "2026-02-18"
 updated: "2026-02-19"
@@ -26,13 +26,13 @@ copyright:
   year: "2026"
 
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted generation of a kernel-first enforcement showcase runner that demonstrates two fail→fix cycles (authority + integrity) using CRI-CORE's commit_allowed return value."
+ai_assistance_details: "AI-assisted hardening of the kernel showcase runner to support scenario selection, structural failure demonstration, and execution summary reporting."
 
 dependencies:
   - "../../CRI-CORE/src/cricore/enforcement/execution.py"
 
 anchors:
-  - "KERNEL-ENFORCEMENT-SHOWCASE-v0.2.0"
+  - "KERNEL-ENFORCEMENT-SHOWCASE-v0.3.0"
 ---
 """
 
@@ -50,12 +50,11 @@ from typing import Any, Dict, List, Mapping, Tuple
 ROOT = Path(__file__).resolve().parent.parent
 RUNS_ROOT = ROOT / "demo_runner" / "runs"
 
-# CRI-CORE run artifact contract version (structure gate)
 CRI_CORE_CONTRACT_VERSION = "0.1.0"
 
 
 # -----------------------------------------------------------------------------
-# Small utilities
+# Utilities
 # -----------------------------------------------------------------------------
 
 def _utc_now_iso() -> str:
@@ -85,7 +84,6 @@ def _sha256_file(path: Path) -> str:
 
 
 def _purge_cricore_modules() -> None:
-    # Avoid stale imports from an old editable install / different path
     to_delete = [
         name for name in list(sys.modules.keys())
         if name == "cricore" or name.startswith("cricore.")
@@ -95,12 +93,8 @@ def _purge_cricore_modules() -> None:
 
 
 def _ensure_cricore_importable() -> None:
-    """
-    Preferred: CRI-CORE installed (pyproject / editable install).
-    Fallback: load from CRICORE_SRC=/path/to/CRI-CORE/src
-    """
     try:
-        import cricore  # noqa: F401
+        import cricore  # noqa
         return
     except Exception:
         pass
@@ -109,19 +103,14 @@ def _ensure_cricore_importable() -> None:
     if not env_src:
         raise RuntimeError(
             "CRI-CORE not importable.\n"
-            "Either install CRI-CORE (editable) or set CRICORE_SRC to CRI-CORE's /src path.\n"
-            "Example (PowerShell):\n"
-            '  $env:CRICORE_SRC="C:\\GitHub\\CRI-CORE\\src"\n'
+            "Install editable or set CRICORE_SRC to CRI-CORE /src path."
         )
 
     candidate = Path(env_src).expanduser().resolve()
     pkg_root = candidate / "cricore"
-    if not candidate.exists() or not candidate.is_dir() or not pkg_root.exists():
-        raise RuntimeError(
-            "CRICORE_SRC is invalid.\n"
-            f"Looked for src: {candidate}\n"
-            f"Expected package folder: {pkg_root}\n"
-        )
+
+    if not candidate.exists() or not pkg_root.exists():
+        raise RuntimeError("CRICORE_SRC invalid.")
 
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
@@ -130,22 +119,18 @@ def _ensure_cricore_importable() -> None:
 
 
 def _print_results(results: List[Any]) -> None:
-    """
-    Print StageResult objects without depending on any specific stage IDs
-    or internal ordering.
-    """
     for r in results:
-        stage_id = getattr(r, "stage_id", "<unknown-stage>")
+        stage_id = getattr(r, "stage_id", "<unknown>")
         passed = bool(getattr(r, "passed", False))
         print(f"{stage_id}: {'OK' if passed else 'FAILED'}")
 
         if not passed:
-            for msg in list(getattr(r, "messages", [])):
+            for msg in getattr(r, "messages", []):
                 print(f"  - {msg}")
 
 
 # -----------------------------------------------------------------------------
-# Run materialization (minimal CRI-CORE run directory)
+# Run Construction
 # -----------------------------------------------------------------------------
 
 def _make_run_dir(run_id: str) -> Path:
@@ -155,64 +140,38 @@ def _make_run_dir(run_id: str) -> Path:
     return run_dir
 
 
-def _materialize_minimal_run(
+def _materialize_run(
     *,
     run_dir: Path,
     run_id: str,
-    proposal: Mapping[str, Any],
     orchestrator_id: str,
     reviewer_id: str,
-    self_approval_override: bool,
-    include_manifest_for_report: bool,
-    tamper_report_after_manifest: bool,
+    include_contract: bool,
+    include_manifest: bool,
+    tamper_after_manifest: bool,
 ) -> Dict[str, Any]:
-    """
-    Creates a CRI-CORE-compatible run directory.
 
-    Integrity behavior:
-      - If include_manifest_for_report=True, SHA256SUMS.txt will include an entry for report.md.
-      - If tamper_report_after_manifest=True, report.md will be changed after SHA is written,
-        producing a deliberate mismatch.
-    """
     created_utc = _utc_now_iso()
 
-    # Required files
-    _write_json(
-        run_dir / "contract.json",
-        {
-            "contract_version": CRI_CORE_CONTRACT_VERSION,
-            "run_id": run_id,
-            "created_utc": created_utc,
-        },
-    )
+    if include_contract:
+        _write_json(
+            run_dir / "contract.json",
+            {
+                "contract_version": CRI_CORE_CONTRACT_VERSION,
+                "run_id": run_id,
+                "created_utc": created_utc,
+            },
+        )
 
     report_path = run_dir / "report.md"
     _write_text(
         report_path,
-        "\n".join(
-            [
-                "# Kernel Enforcement Showcase Run",
-                "",
-                f"- run_id: `{run_id}`",
-                f"- created_utc: `{created_utc}`",
-                f"- contract_version: `{CRI_CORE_CONTRACT_VERSION}`",
-                "",
-                "## Proposal (opaque to kernel except as referenced context)",
-                "```json",
-                json.dumps(dict(proposal), indent=2),
-                "```",
-                "",
-            ]
-        ),
+        f"# Showcase Run\n\nrun_id: {run_id}\n",
     )
 
     _write_json(
         run_dir / "randomness.json",
-        {
-            "run_id": run_id,
-            "deterministic": True,
-            "seed": None,
-        },
+        {"run_id": run_id, "deterministic": True},
     )
 
     _write_json(
@@ -221,42 +180,33 @@ def _materialize_minimal_run(
             "run_id": run_id,
             "approver": {"id": reviewer_id, "type": "human"},
             "approved_at_utc": _utc_now_iso(),
-            "context_ref": "kernel-showcase",
         },
     )
 
     _write_json(
         run_dir / "validation" / "invariant_results.json",
-        {
-            "run_id": run_id,
-            "generated_at_utc": _utc_now_iso(),
-            "notes": "Showcase placeholder invariant outputs; structural presence only.",
-        },
+        {"run_id": run_id},
     )
 
-    # SHA256SUMS.txt (controls integrity behavior)
     sha_path = run_dir / "SHA256SUMS.txt"
-    if include_manifest_for_report:
+
+    if include_manifest:
         digest = _sha256_file(report_path)
-        # Format: "<sha256>  <relative_path>"
         _write_text(sha_path, f"{digest}  report.md\n")
-        if tamper_report_after_manifest:
+
+        if tamper_after_manifest:
             _write_text(
                 report_path,
-                report_path.read_text(encoding="utf-8") + "\n\nTAMPER: mutated after manifest write.\n",
+                report_path.read_text() + "\nTAMPERED\n",
             )
     else:
-        _write_text(
-            sha_path,
-            "# Showcase manifest intentionally has no entries.\n",
-        )
+        _write_text(sha_path, "# no entries\n")
 
-    # run_context (inputs to policy-free kernel stages)
-    run_context: Dict[str, Any] = {
+    return {
         "identities": {
             "orchestrator": {"id": orchestrator_id, "type": "human"},
             "reviewer": {"id": reviewer_id, "type": "human"},
-            "self_approval_override": bool(self_approval_override),
+            "self_approval_override": False,
         },
         "integrity": {
             "workflow_execution_ref": f"showcase://{run_id}",
@@ -264,118 +214,114 @@ def _materialize_minimal_run(
             "attestation_ref": f"showcase://{run_id}/attestation",
         },
         "publication": {
-            "repository_ref": "demo://claim-lifecycle-demo",
-            "commit_ref": "showcase-uncommitted",
+            "repository_ref": "demo://showcase",
+            "commit_ref": "local",
         },
-        "proposal": dict(proposal),
     }
 
-    return run_context
 
-
-# -----------------------------------------------------------------------------
-# Kernel invocation
-# -----------------------------------------------------------------------------
-
-def _kernel_evaluate(run_dir: Path, run_context: Dict[str, Any]) -> Tuple[List[Any], bool]:
+def _kernel_eval(run_dir: Path, context: Dict[str, Any]) -> Tuple[List[Any], bool]:
     _ensure_cricore_importable()
-    from cricore.enforcement.execution import run_enforcement_pipeline  # type: ignore
+    from cricore.enforcement.execution import run_enforcement_pipeline
 
     results, commit_allowed = run_enforcement_pipeline(
         str(run_dir),
         expected_contract_version=CRI_CORE_CONTRACT_VERSION,
-        run_context=run_context,
+        run_context=context,
     )
     return results, bool(commit_allowed)
 
 
 # -----------------------------------------------------------------------------
-# Scenarios
+# Scenario Execution
 # -----------------------------------------------------------------------------
 
-def _scenario(
-    *,
-    label: str,
-    orchestrator_id: str,
-    reviewer_id: str,
-    self_approval_override: bool,
-    include_manifest_for_report: bool,
-    tamper_report_after_manifest: bool,
-) -> None:
+def _run_scenario(label: str, **kwargs) -> bool:
     run_id = _new_run_id()
     run_dir = _make_run_dir(run_id)
 
-    # Proposal is intentionally minimal + opaque to kernel at this stage.
-    proposal = {
-        "proposal_id": label,
-        "type": "kernel_showcase_transition_attempt",
-        "from": "supported",
-        "to": "contradicted",
-        "notes": "This is a kernel harness. Lifecycle semantics are not evaluated here.",
-    }
+    context = _materialize_run(run_dir=run_dir, run_id=run_id, **kwargs)
 
-    run_context = _materialize_minimal_run(
-        run_dir=run_dir,
-        run_id=run_id,
-        proposal=proposal,
-        orchestrator_id=orchestrator_id,
-        reviewer_id=reviewer_id,
-        self_approval_override=self_approval_override,
-        include_manifest_for_report=include_manifest_for_report,
-        tamper_report_after_manifest=tamper_report_after_manifest,
-    )
-
-    results, commit_allowed = _kernel_evaluate(run_dir, run_context)
+    results, allowed = _kernel_eval(run_dir, context)
 
     print(f"\n== {label} ==")
     _print_results(results)
-    print(f"COMMIT: {'allowed' if commit_allowed else 'blocked'} (run_id={run_id})")
+    print(f"COMMIT: {'allowed' if allowed else 'blocked'} (run_id={run_id})")
 
+    return allowed
+
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
 
 def main() -> None:
-    print("Kernel enforcement showcase")
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
 
-    # A) Authority failure → fix
-    _scenario(
-        label="A1 AUTHORITY FAIL (self-approval)",
-        orchestrator_id="alice",
-        reviewer_id="alice",
-        self_approval_override=False,
-        include_manifest_for_report=False,      # not needed for authority scenario
-        tamper_report_after_manifest=False,
-    )
+    scenario = sys.argv[1].lower() if len(sys.argv) > 1 else "all"
 
-    _scenario(
-        label="A2 AUTHORITY FIX (separate reviewer)",
-        orchestrator_id="alice",
-        reviewer_id="bob",
-        self_approval_override=False,
-        include_manifest_for_report=False,
-        tamper_report_after_manifest=False,
-    )
+    total = 0
+    allowed_count = 0
 
-    # B) Integrity failure → fix
-    _scenario(
-        label="B1 INTEGRITY FAIL (tamper report after SHA)",
-        orchestrator_id="alice",
-        reviewer_id="bob",
-        self_approval_override=False,
-        include_manifest_for_report=True,       # include report.md hash entry
-        tamper_report_after_manifest=True,      # then mutate report.md → mismatch
-    )
+    def exec_s(label: str, **kw):
+        nonlocal total, allowed_count
+        total += 1
+        if _run_scenario(label, **kw):
+            allowed_count += 1
 
-    _scenario(
-        label="B2 INTEGRITY FIX (no tamper, hashes match)",
-        orchestrator_id="alice",
-        reviewer_id="bob",
-        self_approval_override=False,
-        include_manifest_for_report=True,       # include report.md hash entry
-        tamper_report_after_manifest=False,     # do not tamper → matches
-    )
+    if scenario in ("authority", "all"):
+        exec_s(
+            "AUTHORITY FAIL",
+            orchestrator_id="alice",
+            reviewer_id="alice",
+            include_contract=True,
+            include_manifest=False,
+            tamper_after_manifest=False,
+        )
 
-    print("\nDONE: kernel showcase complete.")
-    print("Note: commit is treated as log-append only when commit_allowed is True.")
+        exec_s(
+            "AUTHORITY FIX",
+            orchestrator_id="alice",
+            reviewer_id="bob",
+            include_contract=True,
+            include_manifest=False,
+            tamper_after_manifest=False,
+        )
+
+    if scenario in ("integrity", "all"):
+        exec_s(
+            "INTEGRITY FAIL",
+            orchestrator_id="alice",
+            reviewer_id="bob",
+            include_contract=True,
+            include_manifest=True,
+            tamper_after_manifest=True,
+        )
+
+        exec_s(
+            "INTEGRITY FIX",
+            orchestrator_id="alice",
+            reviewer_id="bob",
+            include_contract=True,
+            include_manifest=True,
+            tamper_after_manifest=False,
+        )
+
+    if scenario in ("structure", "all"):
+        exec_s(
+            "STRUCTURE FAIL (missing contract)",
+            orchestrator_id="alice",
+            reviewer_id="bob",
+            include_contract=False,
+            include_manifest=False,
+            tamper_after_manifest=False,
+        )
+
+    print("\nSUMMARY")
+    print("-------")
+    print(f"Total scenarios: {total}")
+    print(f"Allowed: {allowed_count}")
+    print(f"Blocked: {total - allowed_count}")
 
 
 if __name__ == "__main__":
