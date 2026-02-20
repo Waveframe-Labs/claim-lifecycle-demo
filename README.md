@@ -3,11 +3,11 @@ title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
 filetype: "documentation"
 type: "guidance"
 domain: "case-study"
-version: "0.2.0"
-doi: "TBD-0.2.0"
-status: "Draft"
+version: "0.3.2"
+doi: "TBD-0.3.2"
+status: "Active"
 created: "2026-02-05"
-updated: "2026-02-15"
+updated: "2026-02-19"
 
 author:
   name: "Shawn C. Wright"
@@ -25,153 +25,142 @@ copyright:
   year: "2026"
 
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted drafting and refinement of the demo documentation under direct human design, review, and final approval."
+ai_assistance_details: "AI-assisted revision to align README with enforcement showcase hardening and lifecycle runner commit semantics under CRI-CORE."
 
 dependencies: []
 
 anchors:
-  - "CLAIM-LIFECYCLE-DEMO-README-v0.2.0"
+  - "CLAIM-LIFECYCLE-DEMO-README-v0.3.2"
 ---
 
 # Claim Lifecycle Demo
 
-This repository is a minimal, end-to-end demonstration of a **governed
-scientific claim lifecycle** backed by a real enforcement engine.
+This repository is a minimal, end-to-end demonstration of a governed
+scientific claim lifecycle backed by a real enforcement engine.
 
-It shows how a single claim moves through the following states:
+It demonstrates two distinct but related boundaries:
+
+1. A governed claim lifecycle (evidence → proposal → enforcement → state mutation).
+2. A hardened kernel enforcement showcase (structural, authority, and integrity gating).
+
+The lifecycle demo shows how a claim moves through:
 
     proposed → supported → contradicted → superseded
 
-Each state transition is:
+Each transition is:
 
--   triggered by submitted evidence\
--   validated against explicit transition rules\
--   passed through a CRI-CORE enforcement decision boundary\
--   and recorded as an immutable event
+- triggered by submitted evidence
+- validated against explicit transition rules
+- materialized as a CRI-CORE run artifact
+- passed through a deterministic enforcement decision boundary
+- and recorded as an immutable event
 
-This repository demonstrates lifecycle governance.\
-It is not a platform or infrastructure showcase.
-
----  
-
-## What This Demonstrates (In Practical Terms)
-
-This demo models a policy-gated workflow system.
-
-Specifically, it demonstrates:
-
-- Controlled state transitions (no direct mutation of claims)
-- Explicit role separation (orchestrator vs reviewer)
-- Enforcement before mutation (no state change without approval)
-- Auditable execution artifacts (each transition produces a structured run directory)
-- Append-only lifecycle history
-
-In practical environments, this pattern is relevant to:
-
-- Compliance-gated ML pipelines
-- Research governance workflows
-- Regulated data processing systems
-- Scientific reproducibility infrastructure
-
-This repository is intentionally minimal.
-It isolates the governance boundary without introducing platform complexity.
-
----  
-
-## What is being tracked?
-
-The primary object in this demo is a **claim**.
-
-A claim represents the smallest testable scientific statement that
-downstream results depend on.
-
-Example (used in this demo):
-
-> A specific model version achieves at least a specified performance
-> threshold under a declared dataset and evaluation configuration.
-
-This demo focuses on governance mechanics rather than executing real
-experiments.
+This repository demonstrates governance boundaries, not infrastructure scale.
 
 ---
 
-## What makes a transition valid?
+## Two Demonstration Modes
 
-A claim may only change state when a new **evidence submission**:
+### 1. Lifecycle Demonstration (`run_demo.py`)
 
--   references the claim by ID\
--   declares an intended state transition\
--   satisfies declared transition rules\
--   is materialized as a CRI-CORE run artifact\
--   and passes enforcement validation
+Shows:
+
+- Evidence-driven transition proposals
+- Rule validation (transition graph constraints)
+- CRI-CORE enforcement integration
+- Authority boundary enforcement (self-approval denial)
+- Append-only transition logging
+- Commit gating via `commit_allowed`
+
+This runner models a governed scientific workflow.
+
+---
+
+### 2. Kernel Enforcement Showcase (`run_kernel_showcase.py`)
+
+Demonstrates enforcement behavior in isolation, without lifecycle semantics.
+
+Scenarios:
+
+- Authority failure → fix
+- Integrity tamper detection → fix
+- Structural contract failure (missing `contract.json`)
+
+This harness proves:
+
+- Structural admissibility enforcement
+- Role separation enforcement
+- SHA256 artifact integrity verification
+- Stage cascade logic
+- Centralized commit gating
+
+It isolates the enforcement engine from lifecycle logic.
+
+---
+
+## What Is Being Tracked?
+
+The primary object is a claim.
+
+A claim represents the smallest testable scientific statement that
+downstream conclusions depend on.
+
+Example:
+
+> A specific model version achieves at least a declared performance
+> threshold under a defined dataset and evaluation configuration.
+
+This demo focuses on governance mechanics rather than executing experiments.
+
+---
+
+## What Makes a Transition Valid?
+
+A claim may change state only when a new evidence submission:
+
+- references the claim by ID
+- declares an intended state transition
+- satisfies transition rules
+- is materialized as a CRI-CORE run artifact
+- passes enforcement validation
 
 Claim state is never edited directly.
 
----  
+---
 
-## How governance is enforced
+## Enforcement Capabilities Demonstrated
 
-The transition flow implemented in this demo:
+This repository demonstrates:
 
-    evidence submission
-          ↓
-    transition proposal
-          ↓
-    CRI-CORE run materialization
-          ↓
-    enforcement pipeline decision
-          ↓
-    state transition (if allowed)
-
-Each transition attempt produces a structured run directory containing:
-
--   contract.json\
--   report.md\
--   approval.json\
--   randomness.json\
--   SHA256SUMS.txt\
--   validation artifacts
-
-If enforcement fails, the transition is denied and state remains
-unchanged.
+- Rule validation (transition graph constraints)
+- Run structure contract enforcement
+- Structural version gating
+- Identity separation enforcement
+- SHA256 integrity verification
+- Integrity finalization cascade
+- Explicit allow/deny decisions
+- Centralized commit gating
+- Append-only transition logging
 
 ---
 
-## Demonstrated enforcement behaviors
-
-This demo currently demonstrates:
-
--   Rule validation (transition graph constraints)\
--   Run structure contract enforcement\
--   Identity separation enforcement (self-approval denial)\
--   Explicit allow/deny decisions\
--   Append-only transition logging
-
-It does not yet enforce:
-
--   Cryptographic hash verification\
--   Artifact integrity binding\
--   Publication anchoring\
--   External attestation verification
-
-Those are later-phase capabilities of the enforcement engine.
-
----
-
-## Repository structure
+## Repository Structure
 
     claims/           # Claim objects
     evidence/         # Evidence submissions
     rules/            # Transition rules
     transitions/      # Append-only transition log
-    demo_runner/      # Lifecycle + enforcement integration
+    demo_runner/      # Lifecycle + enforcement harnesses
 
-Claim files are never overwritten.\
-History remains visible and auditable.
+Execution artifacts:
+
+    demo_runner/runs/
+
+These are runtime outputs and are not treated as canonical source artifacts.
 
 ---
 
-## Running the demo
+## Running the Demo
 
 ### Prerequisite
 
@@ -180,63 +169,71 @@ Both repositories must exist locally:
     C:\GitHub\CRI-CORE
     C:\GitHub\claim-lifecycle-demo
 
-### Windows (PowerShell)
+---
 
-From the root of this repository:
+### Lifecycle Demo
 
-``` powershell
+From repository root:
+
+```powershell
 $env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
 python demo_runner\run_demo.py
 ```
 
 ---
 
-## Example execution output
+### Kernel Showcase (All Scenarios)
 
-    Initial claim state: proposed
-    [OK] proposed -> supported via ev-002-supported
-    [DENY] supported -> contradicted via ev-003-contradicted (attempt 1)
-            independence: FAILED
-    [OK] supported -> contradicted via ev-003-contradicted (run ...)
-    [OK] contradicted -> superseded via ev-004-superseded
-
-    Final claim state: superseded
-
-This demonstrates:
-
--   Governance boundary is real\
--   Enforcement decisions are explicit\
--   Invalid transitions are denied\
--   State changes only occur after a successful enforcement pass
-
-Example of a rejected transition:
-
-[DENY] supported -> contradicted via ev-003-contradicted
-        independence: FAILED
-          - self-approval detected and no override declared
+```powershell
+$env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
+python demo_runner\run_kernel_showcase.py
+```
 
 ---
 
-## Why this matters
+### Kernel Showcase (Selective Scenarios)
+
+Authority only:
+
+```powershell
+python demo_runner\run_kernel_showcase.py authority
+```
+
+Integrity only:
+
+```powershell
+python demo_runner\run_kernel_showcase.py integrity
+```
+
+Structure only:
+
+```powershell
+python demo_runner\run_kernel_showcase.py structure
+```
+
+---
+
+## Why This Matters
 
 Most research workflows track files and artifacts.
 
-This demo treats **claims themselves as governed objects** whose status
-changes only through validated evidence and explicit enforcement.
+This demo treats claims themselves as governed objects whose status changes
+only through validated evidence and deterministic enforcement.
 
 That enables:
 
--   Deterministic lifecycle control\
--   Reversible conclusions without rewriting history\
--   Explicit accountability boundaries
+- Deterministic lifecycle control
+- Explicit role accountability
+- Tamper-detectable execution artifacts
+- Clear governance boundaries between proposal and mutation
 
 ---
 
 ## Scope
 
-This repository exists to demonstrate the lifecycle boundary clearly and
-concretely.
+This repository demonstrates a governed lifecycle boundary and a hardened
+kernel enforcement boundary.
 
-The enforcement engine (CRI-CORE) is a separate component.\
-The purpose here is to show what it looks like when a claim lifecycle is
-actually governed.
+CRI-CORE remains a separate enforcement engine.
+
+This repository shows what governed claim mutation looks like in practice.
