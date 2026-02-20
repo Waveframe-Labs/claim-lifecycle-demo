@@ -84,7 +84,7 @@ Scenarios:
 
 - Authority failure → fix
 - Integrity tamper detection → fix
-- Structural contract failure (missing `contract.json`)
+- Structural contract failure (missing required artifact)
 
 This harness proves:
 
@@ -146,11 +146,15 @@ This repository demonstrates:
 
 ## Repository Structure
 
-    claims/           # Claim objects
-    evidence/         # Evidence submissions
-    rules/            # Transition rules
-    transitions/      # Append-only transition log
-    demo_runner/      # Lifecycle + enforcement harnesses
+```
+.
+├── claims/           # Governed claim objects
+├── evidence/         # New evidence submissions
+├── rules/            # Transition graph constraints
+├── transitions/      # Append-only immutable transition log
+└── demo_runner/      # Execution harnesses
+    └── runs/         # Runtime output (Git ignored)
+```
 
 Execution artifacts:
 
@@ -162,18 +166,28 @@ These are runtime outputs and are not treated as canonical source artifacts.
 
 ## Running the Demo
 
-### Prerequisite
+### Prerequisites
 
-Both repositories must exist locally:
+This demo acts as a consumer of the **CRI-CORE** enforcement engine. To run these harnesses, you must have both repositories cloned as peers:
 
-    C:\GitHub\CRI-CORE
-    C:\GitHub\claim-lifecycle-demo
+* `CRI-CORE/`: The core enforcement logic and kernel.
+* `claim-lifecycle-demo/`: This repository (the implementation showcase).
+
+**Note:** The demo runners require CRI-CORE to be importable at runtime.
+This can be satisfied either by:
+
+- installing CRI-CORE (e.g., editable install), or
+- setting `PYTHONPATH` to point to the local CRI-CORE/src directory, or
+- setting the `CRICORE_SRC` environment variable to the same path.
+
+The enforcement engine is not bundled in this repository.
 
 ---
 
 ### Lifecycle Demo
 
-From repository root:
+**From the root of 'claim-lifecycle-demo'**
+*Adjust the path below to point to your local 'CRI-CORE\src' directory*
 
 ```powershell
 $env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
