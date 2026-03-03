@@ -3,11 +3,11 @@ title: "Claim Lifecycle Demo — Change Log"
 filetype: "documentation"
 type: "non-normative"
 domain: "case-study"
-version: "0.3.2"
-doi: "TBD-0.3.2"
+version: "0.3.3"
+doi: "TBD-0.3.3"
 status: "Active"
 created: "2026-02-12"
-updated: "2026-02-19"
+updated: "2026-03-03"
 
 author:
   name: "Shawn C. Wright"
@@ -30,7 +30,7 @@ ai_assistance_details: "AI-assisted drafting and refinement of structured change
 dependencies: []
 
 anchors:
-  - "CLAIM-LIFECYCLE-DEMO-CHANGELOG-v0.3.2"
+  - "CLAIM-LIFECYCLE-DEMO-CHANGELOG-v0.3.3"
 ---
 
 # Changelog
@@ -41,6 +41,24 @@ This project follows semantic versioning for demo behavior and governance bounda
 
 ---
 
+## [0.3.3] – 2026-03-03
+
+### Changed
+
+- Updated demo to use the public PyPI distribution of **CRI-CORE**
+- Replaced local kernel dependency instructions with `pip install cricore>=0.6.0`
+- Removed `PYTHONPATH` configuration and peer-repository requirement
+
+### Documentation
+
+- Updated README metadata and installation instructions
+- Clarified demo execution steps for external users
+
+### Notes
+
+- No changes to lifecycle scenarios, enforcement behavior, or runner logic
+- Demo functionality remains identical; only installation and setup were simplified
+- 
 ---
 
 ## [0.3.2] — 2026-02-19

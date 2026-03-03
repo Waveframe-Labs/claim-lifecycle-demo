@@ -2,7 +2,7 @@ cff-version: 1.2.0
 title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
 message: "If you use or reference this demo, please cite it as a governed claim lifecycle and kernel enforcement reference implementation."
 type: software
-version: 0.3.2
+version: 0.3.3
 date-released: 2026-02-19
 
 authors:

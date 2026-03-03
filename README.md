@@ -3,11 +3,11 @@ title: "Claim Lifecycle Demo — End-to-End Governed Claim Example"
 filetype: "documentation"
 type: "guidance"
 domain: "case-study"
-version: "0.3.2"
-doi: "TBD-0.3.2"
+version: "0.3.3"
+doi: "TBD-0.3.3"
 status: "Active"
 created: "2026-02-05"
-updated: "2026-02-20"
+updated: "2026-03-03"
 
 author:
   name: "Shawn C. Wright"
@@ -25,12 +25,12 @@ copyright:
   year: "2026"
 
 ai_assisted: "partial"
-ai_assistance_details: "AI-assisted revision to align README with enforcement showcase hardening and lifecycle runner commit semantics under CRI-CORE."
 
-dependencies: []
+dependencies:
+  - "cricore>=0.6.0"
 
 anchors:
-  - "CLAIM-LIFECYCLE-DEMO-README-v0.3.2"
+  - "CLAIM-LIFECYCLE-DEMO-README-v0.3.3"
 ---
 
 # Claim Lifecycle Demo
@@ -144,54 +144,27 @@ This repository demonstrates:
 
 ---
 
-## Repository Structure
-
-```
-.
-├── claims/           # Governed claim objects
-├── evidence/         # New evidence submissions
-├── rules/            # Transition graph constraints
-├── transitions/      # Append-only immutable transition log
-└── demo_runner/      # Execution harnesses
-    └── runs/         # Runtime output (Git ignored)
-```
-
-Execution artifacts:
-
-    demo_runner/runs/
-
-These are runtime outputs and are not treated as canonical source artifacts.
-
----
-
 ## Running the Demo
 
 ### Prerequisites
 
-This demo acts as a consumer of the **CRI-CORE** enforcement engine. To run these harnesses, you must have both repositories cloned as peers:
+This demo depends on the public **CRI-CORE** enforcement kernel.
 
-* `CRI-CORE/`: The core enforcement logic and kernel.
-* `claim-lifecycle-demo/`: This repository (the implementation showcase).
+Install it from PyPI:
+```  
+pip install cricore>=0.6.0
+```  
 
-**Note:** The demo runners require CRI-CORE to be importable at runtime.
-This can be satisfied either by:
-
-- installing CRI-CORE (e.g., editable install), or
-- setting `PYTHONPATH` to point to the local CRI-CORE/src directory, or
-- setting the `CRICORE_SRC` environment variable to the same path.
-
-The enforcement engine is not bundled in this repository.
+No local clone of the CRI-CORE repository is required.
 
 ---
 
 ### Lifecycle Demo
 
 **From the root of 'claim-lifecycle-demo'**
-*Adjust the path below to point to your local 'CRI-CORE\src' directory*
 
 ```powershell
-$env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
-python demo_runner\run_demo.py
+python demo_runner/run_demo.py
 ```
 
 ---
@@ -199,8 +172,7 @@ python demo_runner\run_demo.py
 ### Kernel Showcase (All Scenarios)
 
 ```powershell
-$env:PYTHONPATH="C:\GitHub\CRI-CORE\src"
-python demo_runner\run_kernel_showcase.py
+python demo_runner/run_kernel_showcase.py
 ```
 
 ---
@@ -251,3 +223,10 @@ kernel enforcement boundary.
 CRI-CORE remains a separate enforcement engine.
 
 This repository shows what governed claim mutation looks like in practice.
+
+---
+
+<div align="center">
+  <sub>© 2025 Waveframe Labs — Independent Open-Science Research Entity • Governed under the Aurora Research Initiative (ARI)</sub>
+</div>
+
